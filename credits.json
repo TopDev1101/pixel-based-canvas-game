@@ -1,0 +1,26 @@
+{
+    "assets":[
+        {
+            "type":"audio",
+            "desc":"Music/general audio",
+            "author":"Eric Matyas",
+            "contacts":{
+                "email":"ematyas@aol.com",
+                "twitter":"https://twitter.com/EricMatyas"
+            },
+            "homepage":"https://soundimage.org/",
+            "license":"https://soundimage.org/sample-page/"
+        },
+        {
+            "type":"images",
+            "desc":"icons",
+            "author":"delapouite",
+            "contacts":{
+                "email":"delapouite@gmail.com",
+                "twitter":"https://twitter.com/Delapouite"
+            },
+            "homepage":"https://delapouite.com/",
+            "license":"https://creativecommons.org/licenses/by/3.0/"
+        }
+    ]
+}
