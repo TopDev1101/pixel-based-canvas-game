@@ -122,7 +122,7 @@
 
 	* Almost init
 + src/script.js
-+ src/engine/window.js
+* + src/engine/window.js
 = 5_main.js
 
 + src/game/gui/menuitem.js
