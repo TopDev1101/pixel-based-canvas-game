@@ -50,7 +50,30 @@
 + src/game/render/tilescalehelper.js
 + src/game/render/tileviewcontext.js
 + src/game/map/chunkrender.js
-= 3_visual.js
+
+= 3_visualEngine.js
+
+	* Sprites
++ src/game/render/sprite.js
+
+	* Entity Sprites
++ src/game/entity/sprite/entitysprite.js
++ src/game/entity/sprite/person.js
+
+
+	* Tilesprites
++ src/game/map/tilesprite/tilesprite.js
++ src/game/map/tilesprite/nonsolid.js
++ src/game/map/tilesprite/bush.js
++ src/game/map/tilesprite/neighbourdependent.js
++ src/game/map/tilesprite/metaneighdep.js
++ src/game/map/tilesprite/wall.js
++ src/game/map/tilesprite/sand.js
++ src/game/map/tilesprite/water.js
++ src/game/map/tilesprite/stockpile.js
+= 4_sprites.js
+
+
 
 	* Map
 + src/game/actor.js
@@ -66,15 +89,13 @@
 + src/game/render/routines/mouseupdate.js
 + src/game/render/routines/mousehandlers.js
 
-+ src/game/render/sprite.js
+
 
 
 + src/game/item/item.js
 + src/game/item/items.js
 
-	* Entity Sprites
-+ src/game/entity/sprite/entitysprite.js
-+ src/game/entity/sprite/person.js
+
 
 	* Entities
 + src/game/entity/ai/pathfinding.js
@@ -82,16 +103,7 @@
 + src/game/entity/living.js
 + src/game/entity/person.js
 
-	* Tilesprites
-+ src/game/map/tilesprite/tilesprite.js
-+ src/game/map/tilesprite/nonsolid.js
-+ src/game/map/tilesprite/bush.js
-+ src/game/map/tilesprite/neighbourdependent.js
-+ src/game/map/tilesprite/metaneighdep.js
-+ src/game/map/tilesprite/wall.js
-+ src/game/map/tilesprite/sand.js
-+ src/game/map/tilesprite/water.js
-+ src/game/map/tilesprite/stockpile.js
+
 
 	* Tiles
 + src/game/map/tiles/tile.js
@@ -118,12 +130,12 @@
 
 
 
-= 4_game.js
+= 5_game.js
 
 	* Almost init
 + src/script.js
 * + src/engine/window.js
-= 5_main.js
+= 6_main.js
 
 + src/game/gui/menuitem.js
 + src/game/gui/submenucontainer.js
@@ -134,7 +146,7 @@
 + src/game/keybinder.js
 + src/game/keybinds.js
 
-= 6_gui.js
+= 7_gui.js
 
 + src/engine/loader.js
 s null

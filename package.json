@@ -1,12 +1,14 @@
 {
 	"main": "index.html",
-	"node-main":"node.js",
-	"name": "Townsend Alpha",
-	"author":"Daniel Tran",
+	"node-main": "node.js",
+	"name": "townsend-alpha",
+	"version": "1.0.0",
+	"author": "Dap 'Daniel' Tran",
 	"builder": {
 		"name": "jsbuilder",
 		"version": "0.0.1"
 	},
+	"license": "MIT",
 	"chromium-args": "",
 	"window": {
 		"height": 800,
@@ -17,5 +19,9 @@
 	},
 	"script": {
 		"generate-docs": "node_modules/.bin/jsdoc --configure jsdoc.json --verbose"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/dantran88/townsend.git"
 	}
 }
