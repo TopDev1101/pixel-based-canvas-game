@@ -1,0 +1,142 @@
+	* Libraries
+^ utils/debug.js
+^ utils/string.js
+^ utils/object.js
+^ utils/math.js
+^ utils/algorithmassist.js
+^ utils/interface.js
+^ containers/routinecollection.js
+^ containers/vector.js
+^ containers/forterate.js
+^ containers/boplane.js
+^ containers/uboplane.js
+^ containers/propipe.js
+^ objects/CRContext2DProxy.js
+^ objects/Color.js
+^ utils/simpleee.js
+
+= 0_libraries.js
+
+
+	* Pre-init
++ src/engine/containers/vectorvariations.js
++ src/initmethods.js
+	* Localizations and strings
++ src/localization/words.js
++ src/localization/localization.js
++ src/localization/en_us.js
+= 1_preinit.js
+
++ src/config.js
+= 2_config.js
+
+	* Developmental helpers
++ src/engine/dev/debugs.js
++ src/engine/render/rendering.js
++ src/interfacenw.js
+
+	* Source files
+
+	* Spritesheets
++ src/engine/containers/spritesources.js
++ src/engine/containers/tilesheet.js
++ src/engine/containers/spritesheet.js
+
+	* DF rendering
++ src/game/render/DF/spritedefs.js
+
+	* Rendering stuff
++ src/game/render/viewcontext.js
++ src/game/render/tilescalehelper.js
++ src/game/render/tileviewcontext.js
++ src/game/map/chunkrender.js
+= 3_visual.js
+
+	* Map
++ src/game/actor.js
++ src/game/map/tilemap.js
++ src/game/map/worldgen.js
++ src/game/map/world.js
++ src/game/map/chunk.js
++ src/game/inventory.js
+
+
+	* Routines
++ src/game/render/routines/cursorinteractioncontext.js
++ src/game/render/routines/mouseupdate.js
++ src/game/render/routines/mousehandlers.js
+
++ src/game/render/sprite.js
+
+
++ src/game/item/item.js
++ src/game/item/items.js
+
+	* Entity Sprites
++ src/game/entity/sprite/entitysprite.js
++ src/game/entity/sprite/person.js
+
+	* Entities
++ src/game/entity/ai/pathfinding.js
++ src/game/entity/entity.js
++ src/game/entity/living.js
++ src/game/entity/person.js
+
+	* Tilesprites
++ src/game/map/tilesprite/tilesprite.js
++ src/game/map/tilesprite/nonsolid.js
++ src/game/map/tilesprite/bush.js
++ src/game/map/tilesprite/neighbourdependent.js
++ src/game/map/tilesprite/metaneighdep.js
++ src/game/map/tilesprite/wall.js
++ src/game/map/tilesprite/sand.js
++ src/game/map/tilesprite/water.js
++ src/game/map/tilesprite/stockpile.js
+
+	* Tiles
++ src/game/map/tiles/tile.js
++ src/game/map/tiles/types/forageable.js
++ src/game/map/tiles/empty.js
++ src/game/map/tiles/simple/wall.js
++ src/game/map/tiles/simple/stone.js
++ src/game/map/tiles/simple/sand.js
++ src/game/map/tiles/simple/water.js
++ src/game/map/tiles/wild/bush.js
++ src/game/map/tiles/wild/berrybush.js
++ src/game/map/tiles/types/storage.js
++ src/game/map/tiles/objects/stockpile.js
+
++ src/game/map/tiles/simple/grass.js
++ src/game/map/tiles/types/resource.js
++ src/game/map/tiles/objects/minehole.js
++ src/game/map/tiles/simple/woodpath.js
+
+	* Debugging tiles
++ src/game/map/tiles/debug/debugFNSUD.js
+
++ src/game/map/tiles/tiles.js
+
+
+
+= 4_game.js
+
+	* Almost init
++ src/script.js
++ src/engine/window.js
+= 5_main.js
+
++ src/game/gui/menuitem.js
++ src/game/gui/submenucontainer.js
++ src/game/gui/submenu.js
++ src/game/gui/controlmenu.js
++ src/game/gui/tooltip.js
++ src/game/gui/example.js
++ src/game/keybinder.js
++ src/game/keybinds.js
+
+= 6_gui.js
+
++ src/engine/loader.js
+s null
+= loader.js
+

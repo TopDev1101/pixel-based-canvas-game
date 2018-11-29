@@ -1,0 +1,21 @@
+{
+	"main": "index.html",
+	"node-main":"node.js",
+	"name": "Townsend Alpha",
+	"author":"Daniel Tran",
+	"builder": {
+		"name": "jsbuilder",
+		"version": "0.0.1"
+	},
+	"chromium-args": "",
+	"window": {
+		"height": 800,
+		"width": 1200
+	},
+	"dependencies": {
+		"simplex-noise": "^2.4.0"
+	},
+	"script": {
+		"generate-docs": "node_modules/.bin/jsdoc --configure jsdoc.json --verbose"
+	}
+}

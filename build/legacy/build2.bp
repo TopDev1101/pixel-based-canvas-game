@@ -1,0 +1,115 @@
+
+
+
+
+	* Libraries
+^ utils/debug.js
+^ utils/string.js
+^ utils/object.js
+^ utils/math.js
+^ utils/algorithmassist.js
+^ utils/interface.js
+^ containers/routinecollection.js
+^ containers/vector.js
+^ containers/forterate.js
+^ containers/boplane.js
+^ containers/uboplane.js
+^ containers/propipe.js
+^ objects/CRContext2DProxy.js
+^ objects/Color.js
+^ utils/simpleee.js
+
+= 0_libraries.js
+
+	* Pre-init
++ src/engine/containers/vectorvariations.js
++ src/initmethods.js
+	* Localizations and strings
++ src/localization/localization.js
++ src/localization/en_us.js
+= 1_preinit.js
+
++ src/config.js
+= 2_config.js
+
+	* Developmental helpers
++ src/engine/dev/debugs.js
++ src/engine/render/rendering.js
+
+	* Source files
+
+	* Spritesheets
++ src/engine/containers/spritesources.js
++ src/engine/containers/tilesheet.js
++ src/engine/containers/spritesheet.js
+
+	* DF rendering
++ src/game/render/DF/spritedefs.js
+
+	* Rendering stuff
++ src/game/render/viewcontext.js
++ src/game/render/tilescalehelper.js
++ src/game/render/tileviewcontext.js
+= 3_visual.js
+
+	* Map
++ src/game/map/tilemap.js
++ src/game/map/world.js
++ src/game/map/chunk.js
++ src/game/identifiableObject.js
++ src/game/inventory.js
+
+
+	* Routines
++ src/game/render/routines/cursorinteractioncontext.js
++ src/game/render/routines/mouseupdate.js
+
++ src/game/render/sprite.js
+
+
++ src/game/item/item.js
+
+
+	* Entities
++ src/game/entity/ai/pathfinding.js
++ src/game/entity/entity.js
++ src/game/entity/living.js
++ src/game/entity/person.js
+
+	* Tiles
++ src/game/map/tiles/tile.js
++ src/game/map/tiles/forageable.js
++ src/game/map/tiles/debug.js
++ src/game/map/tiles/empty.js
++ src/game/map/tiles/wall.js
++ src/game/map/tiles/bush.js
++ src/game/map/tiles/berrybush.js
++ src/game/map/tiles/storage.js
++ src/game/map/tiles/stockpile.js
+
++ src/game/map/tiles/grass.js
+
+
+
++ src/game/map/tiles/generics.js
+
+
+= 4_game.js
+
++ src/game/gui/menuitem.js
++ src/game/gui/submenucontainer.js
++ src/game/gui/submenu.js
++ src/game/gui/controlmenu.js
++ src/game/gui/example.js
+
+= 5_gui.js
+
+	* Almost init
++ src/script.js
++ src/engine/window.js
+= 6_main.js
+
++ src/engine/loader.js
+= loader.js
+
+s
