@@ -2,7 +2,7 @@
     "assets":[
         {
             "type":"audio",
-            "desc":"Music/general audio",
+            "desc":"Music",
             "author":"Eric Matyas",
             "contacts":{
                 "email":"ematyas@aol.com",
@@ -23,6 +23,19 @@
             "homepage":"https://delapouite.com/",
             "license":"https://creativecommons.org/licenses/by/3.0/",
             "attribution_info":"https://creativecommons.org/licenses/by/3.0/"
+        }
+    ],
+    "runtime":[
+        {
+            "type":"environment",
+            "desc":"NWJS",
+            "author":"NW.js community",
+            "contacts":{
+                "github":"https://github.com/nwjs/nw.js"
+            },
+            "homepage":"https://nwjs.io/",
+            "license":"https://github.com/nwjs/nw.js/blob/nw35/LICENSE",
+            "attribution_info":""
         }
     ]
 }
