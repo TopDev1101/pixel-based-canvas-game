@@ -9,7 +9,8 @@
                 "twitter":"https://twitter.com/EricMatyas"
             },
             "homepage":"https://soundimage.org/",
-            "license":"https://soundimage.org/sample-page/"
+            "license":"https://soundimage.org/sample-page/",
+            "attribution_info":"https://soundimage.org/"
         },
         {
             "type":"images",
@@ -20,7 +21,8 @@
                 "twitter":"https://twitter.com/Delapouite"
             },
             "homepage":"https://delapouite.com/",
-            "license":"https://creativecommons.org/licenses/by/3.0/"
+            "license":"https://creativecommons.org/licenses/by/3.0/",
+            "attribution_info":"https://creativecommons.org/licenses/by/3.0/"
         }
     ]
 }
