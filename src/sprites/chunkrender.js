@@ -1,5 +1,6 @@
-class ChunkRenderer{
+class ChunkRenderer extends Actor{
     constructor( chunk ){
+        super("chunkrenderer");
         this.chunk = chunk;
 
         this.canvas = document.createElement("canvas");
