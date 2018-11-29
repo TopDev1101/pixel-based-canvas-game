@@ -21,6 +21,7 @@
 	* Pre-init
 + src/engine/containers/vectorvariations.js
 + src/initmethods.js
++ src/game/actor.js
 	* Localizations and strings
 + src/localization/words.js
 + src/localization/localization.js
@@ -49,34 +50,34 @@
 + src/game/render/viewcontext.js
 + src/game/render/tilescalehelper.js
 + src/game/render/tileviewcontext.js
-+ src/game/map/chunkrender.js
 
 = 3_visualEngine.js
 
++ src/sprites/chunkrender.js
+
 	* Sprites
-+ src/game/render/sprite.js
++ src/sprites/sprite.js
 
 	* Entity Sprites
-+ src/game/entity/sprite/entitysprite.js
-+ src/game/entity/sprite/person.js
++ src/sprites/entitysprite/entitysprite.js
++ src/sprites/entitysprite/person.js
 
 
 	* Tilesprites
-+ src/game/map/tilesprite/tilesprite.js
-+ src/game/map/tilesprite/nonsolid.js
-+ src/game/map/tilesprite/bush.js
-+ src/game/map/tilesprite/neighbourdependent.js
-+ src/game/map/tilesprite/metaneighdep.js
-+ src/game/map/tilesprite/wall.js
-+ src/game/map/tilesprite/sand.js
-+ src/game/map/tilesprite/water.js
-+ src/game/map/tilesprite/stockpile.js
++ src/sprites/tilesprite/tilesprite.js
++ src/sprites/tilesprite/nonsolid.js
++ src/sprites/tilesprite/bush.js
++ src/sprites/tilesprite/neighbourdependent.js
++ src/sprites/tilesprite/metaneighdep.js
++ src/sprites/tilesprite/wall.js
++ src/sprites/tilesprite/sand.js
++ src/sprites/tilesprite/water.js
++ src/sprites/tilesprite/stockpile.js
 = 4_sprites.js
 
 
 
 	* Map
-+ src/game/actor.js
 + src/game/map/tilemap.js
 + src/game/map/worldgen.js
 + src/game/map/world.js

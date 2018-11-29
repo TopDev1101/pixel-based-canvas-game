@@ -1,6 +1,90 @@
-/* File source: ../src/Ambitious_Dwarf///src/game/render/sprite.js */
-class Sprite{
+/* File source: ../src/Ambitious_Dwarf///src/sprites/chunkrender.js */
+class ChunkRenderer extends Actor{
+    constructor( chunk ){
+        super("chunkrenderer");
+        this.chunk = chunk;
+
+        this.canvas = document.createElement("canvas");
+        this.canvasCtx = this.canvas.getContext("2d");
+        this.canvas.width = this.chunk.size * cfg.tile_size;
+        this.canvas.height = this.chunk.size * cfg.tile_size;
+
+        this.canvasOverflow = document.createElement("canvas");
+        this.canvasOverflowCtx = this.canvasOverflow.getContext("2d");
+        this.canvasOverflow.width = this.chunk.size * cfg.tile_size;
+        this.canvasOverflow.height = this.chunk.size * cfg.tile_size;
+
+        this.debug_color = new Color( Math.floor(Math.random()*255), Math.floor(Math.random()*255), Math.floor(Math.random()*255), 0.5 ).rgbaString;
+
+        this.drawCalls = 0;
+
+        this.tilesNeedRendering = [];
+        this.firstRenderDone = false;
+    }
+
+    // Basically the chunk's drawn state stays static unless it's in view
+    t3_drawProtocol(){
+        this.drawCalls++;
+        if( !this.firstRenderDone && Townsend.allTilesheetsLoaded ){
+            this.drawFirst();
+        }
+        this.drawUnrendered();
+        this.drawDynamic();
+        //this.drawNeighbourDependent();
+    }
+
+    drawFirst(){
+        var coordVect = new CoordinateVector(0,0),
+        globalTileCoordVect = null,
+            self = this;
+        nestedIncriment( [0,0], [this.chunk.size, this.chunk.size], (x, y)=>{
+            coordVect.x = x;
+            coordVect.y = y;
+            globalTileCoordVect =this.chunk.globalTileOrigin.add( coordVect );
+            
+            self.chunk.getObject( x, y ).payload.tile.sprite.t3_drawRoutine( self.chunk, coordVect, globalTileCoordVect );
+        });
+        this.firstRenderDone = true;
+        this.chunk.world.increaseRenderedChunks();
+    }
+
+    /**
+     * Draws unrendered tiles, usually new ones seperate from drawFirst
+     */
+    drawUnrendered(){
+        var self = this;
+        while( self.tilesNeedRendering.length != 0 ){
+            var node = self.tilesNeedRendering.pop(),
+                coordVect = node.position,
+                globalTileCoordVect = this.chunk.globalTileOrigin.add( coordVect );
+            node.tile.sprite.t3_drawRoutine( self.chunk, coordVect, globalTileCoordVect );
+        }
+    }
+
+     /**
+     * Draw dynamic tiles
+     */
+    drawDynamic(){
+        var self = this;
+        Object.keys( this.chunk.dynamicTilesKeys ).map( ( key )=>{
+            var node = this.chunk.dynamicTiles[ key ];
+            node.tile.sprite.t3_drawRoutine( self.chunk, node.position, self.chunk.globalTileOrigin.add( node.position ) );
+        });
+    }
+
+    // Updates a single neighbour dependent tile
+    drawNeighbourDependent(){
+        if(this.chunk.neighbourDependentTilesKeys.length == 0){return;}
+        var node = this.chunk.neighbourDependentTiles[ this.chunk.neighbourDependentTilesKeys[ this.drawCalls % this.chunk.neighbourDependentTilesKeys.length ]];
+        node.tile.sprite.t3_drawRoutine( this.chunk, node.position, this.chunk.globalTileOrigin.add( node.position ) );
+    }
+
+}
+
+/* File source: ../src/Ambitious_Dwarf///src/sprites/sprite.js */
+class Sprite extends Actor{
     constructor(){
+		super("sprite");
         this.source = Townsend.spritesheet.grounds;
         this.sources = {};
 
@@ -92,7 +176,7 @@ class PrerenderableSprite extends Sprite{
 	t3_prerender(){}
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/game/entity/sprite/entitysprite.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites/entitysprite/entitysprite.js */
 class EntitySprite extends PrerenderableSprite{
 	constructor(entity){
 		super( true );
@@ -177,7 +261,7 @@ class EntityJob{
 	}
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/game/entity/sprite/person.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites/entitysprite/person.js */
 class EntitySpritePerson extends EntitySprite{
 	constructor( entity ){
 		super( entity );
@@ -241,7 +325,7 @@ class EntitySpritePerson extends EntitySprite{
 	}
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/game/map/tilesprite/tilesprite.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/tilesprite.js */
 /**
  * Simple tiles
  */
@@ -398,7 +482,7 @@ class TileSprite extends PrerenderableSprite{
 	}
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/game/map/tilesprite/nonsolid.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/nonsolid.js */
 class TileSpriteNonSolid extends TileSprite{
 	constructor( ...args ){
 		super(...args);
@@ -420,7 +504,7 @@ class TileSpriteNonSolid extends TileSprite{
 	}
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/game/map/tilesprite/bush.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/bush.js */
 class TileSpriteBush extends TileSprite{
     constructor( tile ){
         super( tile );
@@ -451,7 +535,7 @@ class TileSpriteBush extends TileSprite{
     }
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/game/map/tilesprite/neighbourdependent.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/neighbourdependent.js */
 class TileSpriteNeighbourDependent extends TileSprite{
     constructor( tile, source, atlasKey = new Vector(0,0) ){
         super( tile );
@@ -541,7 +625,7 @@ class TileSpriteNeighbourDependent extends TileSprite{
     }
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/game/map/tilesprite/metaneighdep.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/metaneighdep.js */
 class TileSpriteMetaNeighbourDependent extends TileSpriteNeighbourDependent{
     constructor( tile, source, atlasKey = new Vector(0,0) ){
         super( tile, source, atlasKey );
@@ -564,7 +648,7 @@ class TileSpriteMetaNeighbourDependent extends TileSpriteNeighbourDependent{
     }
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/game/map/tilesprite/wall.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/wall.js */
 
 
 class TileSpriteWall extends TileSpriteNeighbourDependent{
@@ -617,7 +701,7 @@ class TileSpriteWall extends TileSpriteNeighbourDependent{
 }
 
 
-/* File source: ../src/Ambitious_Dwarf///src/game/map/tilesprite/sand.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/sand.js */
 class TileSpriteSand extends TileSpriteNeighbourDependent{
     constructor( tile, source, atlasKey ){
         super( tile, source, atlasKey );
@@ -628,7 +712,7 @@ class TileSpriteSand extends TileSpriteNeighbourDependent{
     }
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/game/map/tilesprite/water.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/water.js */
 class TileSpriteWater extends TileSpriteNeighbourDependent{
     constructor( tile, source, atlasKey ){
         super( tile, source, atlasKey );
@@ -636,7 +720,7 @@ class TileSpriteWater extends TileSpriteNeighbourDependent{
     }
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/game/map/tilesprite/stockpile.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/stockpile.js */
 class TileSpriteStockpile extends TileSpriteNeighbourDependent{
     constructor( tile ){
         super( tile );

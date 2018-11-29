@@ -1,5 +1,6 @@
-class Sprite{
+class Sprite extends Actor{
     constructor(){
+		super("sprite");
         this.source = Townsend.spritesheet.grounds;
         this.sources = {};
 
