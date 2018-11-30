@@ -674,7 +674,7 @@ class Inventory{
     }
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/game/render/routines/cursorinteractioncontext.js */
+/* File source: ../src/Ambitious_Dwarf///src/game/render/cursorinteractioncontext.js */
 // TODO integrate
 
 class CursorInteractionContext {
@@ -753,7 +753,7 @@ class CursorInteractionContext {
 
 
 
-/* File source: ../src/Ambitious_Dwarf///src/game/render/routines/mouseupdate.js */
+/* File source: ../src/Ambitious_Dwarf///src/game/render/mouseupdate.js */
 
 
 
@@ -876,7 +876,7 @@ function initializeMouseRoutine() {
 
 */
 
-/* File source: ../src/Ambitious_Dwarf///src/game/render/routines/mousehandlers.js */
+/* File source: ../src/Ambitious_Dwarf///src/game/render/mousehandlers.js */
 /**
  * Gets the location of the tile which the mouse is hovering on the element
  * ! Requires bound RegionRenderContext

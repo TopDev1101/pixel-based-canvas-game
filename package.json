@@ -8,6 +8,10 @@
 		"name": "jsbuilder",
 		"version": "0.0.1"
 	},
+	"runtime":{
+		"name":"nwjs",
+		"ver":"0.34.5"
+	},
 	"license": "MIT",
 	"chromium-args": "",
 	"window": {
