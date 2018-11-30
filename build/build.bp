@@ -43,8 +43,6 @@
 + src/engine/containers/tilesheet.js
 + src/engine/containers/spritesheet.js
 
-	* DF rendering
-+ src/game/render/DF/spritedefs.js
 
 	* Rendering stuff
 + src/game/render/viewcontext.js
@@ -58,6 +56,7 @@
 	* Sprites
 + src/sprites/sprite.js
 
++ src/game/render/spritedefs.js
 	* Entity Sprites
 + src/sprites/entitysprite/entitysprite.js
 + src/sprites/entitysprite/person.js
@@ -86,9 +85,9 @@
 
 
 	* Routines
-+ src/game/render/routines/cursorinteractioncontext.js
-+ src/game/render/routines/mouseupdate.js
-+ src/game/render/routines/mousehandlers.js
++ src/game/render/cursorinteractioncontext.js
++ src/game/render/mouseupdate.js
++ src/game/render/mousehandlers.js
 
 
 
