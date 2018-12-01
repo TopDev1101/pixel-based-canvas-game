@@ -1705,6 +1705,14 @@ class EntityLiving extends Entity{
 		 */
         
 	}
+
+	/**
+	 * Returns an array with all entities that fit the profile
+	 * @param {Function} profile entity profile query Function->boolean
+	 */
+	queryEntities( profile ){
+		return Townsend.World.entities.filter( profile );
+	}
 	
 	resetIdleTimer(){
 		this.idleTimer = this.idleTimer = Math.max( Math.floor(Math.random()*100)-this.attributes.performance.endurance*8, 10 );

@@ -484,11 +484,14 @@ const DIML = "xyzabcdefghijklmnopqrstuvw";
  */
 class Vector{
 	constructor(){
-		if( Object.getClassName( arguments[0] ) == "Vector" ){ this.constructFromVector( arguments[0] ); }
+		if(!arguments[0]){arguments[0] = 0;}
+		if( arguments[0].isVector ){ this.constructFromVector( arguments[0] ); }
 		else if( Array.isArray( arguments[0] ) ){ this.constructFromArray( arguments[ 0 ] ); }
 		else { this.constructFromArray( arguments ); }
 		this.variation = Vector;
 	}
+
+	get isVector(){return true;}
 	
 	constructFromArray( _Array ){
 		this.values = new Array( _Array.length ).fill(0).map( ( zero, i )=>{

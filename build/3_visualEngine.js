@@ -722,6 +722,7 @@ class TileViewContext extends ViewContext{
 	}
 	
 	static t3_frameDrawRoutine(  ){
+		if(!cfg.t3_routineEnable_drawFrame) return;
 		if(cfg.render_dynamic_only && !Townsend.VC.frameNeedsUpdate){
 			if(Townsend.VC.frameCounter%1000==0){
 				// Randomly force frame to update
@@ -748,6 +749,7 @@ class TileViewContext extends ViewContext{
 	}
 
 	static t3_chunkDrawRoutine(  ){
+		if(!cfg.t3_routineEnable_drawChunk) return;
 		TileViewContext.clearViewspace( Townsend.CVSCTX.ground );
 		TileViewContext.clearViewspace( Townsend.CVSCTX.overflow );
 
@@ -789,6 +791,7 @@ class TileViewContext extends ViewContext{
 	 * Drawroutine for entities
 	 */
 	static t3_entityDrawRoutine(){
+		if(!cfg.t3_routineEnable_drawEntity) return;
 		TileViewContext.clearViewspace( Townsend.CVSCTX.entities );
 		var ctx = Townsend.CVSCTX.entities;
 
@@ -854,6 +857,7 @@ class TileViewContext extends ViewContext{
 	 * (10-20fps performance increase)
 	 */
 	static t3_mergeDrawRoutine(){
+		if(!cfg.t3_routineEnable_composite) return;
 		if( cfg.render_dynamic_only ){
 			// Routine for dynamic-sprite-only rendering 
 			// 30% slower on 2x2 map with 100 entities
@@ -921,6 +925,7 @@ class TileViewContext extends ViewContext{
         }
     }
 
+	/*
     static DEPRECIATED_clearRenderspaces( self, renderspaces ){
         self.renderingManager.contexts.rendering.fillStyle = new Color( 0,0,0,0 ).rgbaString;
         self.renderingManager.contexts.rendering.clearRect( 0,0,window.innerWidth,window.innerHeight );
@@ -956,6 +961,7 @@ class TileViewContext extends ViewContext{
 			}
 		});
 	}
+	*/
 
 	requestRedraw(){
 		this.needsRedraw = true;

@@ -1,6 +1,6 @@
 class ChunkRenderer extends Actor{
     constructor( chunk ){
-        super("chunkrenderer");
+        super("sprite");
         this.chunk = chunk;
 
         this.canvas = document.createElement("canvas");
@@ -10,8 +10,8 @@ class ChunkRenderer extends Actor{
 
         this.canvasOverflow = document.createElement("canvas");
         this.canvasOverflowCtx = this.canvasOverflow.getContext("2d");
-        this.canvasOverflow.width = this.chunk.size * cfg.tile_size;
-        this.canvasOverflow.height = this.chunk.size * cfg.tile_size;
+        this.canvasOverflow.width = 16;
+        this.canvasOverflow.height = 16;
 
         this.debug_color = new Color( Math.floor(Math.random()*255), Math.floor(Math.random()*255), Math.floor(Math.random()*255), 0.5 ).rgbaString;
 
@@ -24,6 +24,7 @@ class ChunkRenderer extends Actor{
     // Basically the chunk's drawn state stays static unless it's in view
     t3_drawProtocol(){
         this.drawCalls++;
+        if( !cfg.debug_enable_newChunkRenders ) return;
         if( !this.firstRenderDone && Townsend.allTilesheetsLoaded ){
             this.drawFirst();
         }
@@ -33,6 +34,8 @@ class ChunkRenderer extends Actor{
     }
 
     drawFirst(){
+        this.canvasOverflow.width = this.chunk.size * cfg.tile_size;
+        this.canvasOverflow.height = this.chunk.size * cfg.tile_size;
         var coordVect = new CoordinateVector(0,0),
         globalTileCoordVect = null,
             self = this;
