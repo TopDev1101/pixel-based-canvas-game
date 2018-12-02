@@ -9,7 +9,7 @@ var SSWalls = new Spritesheet( createSource.img( "src/assets/walls.png" ), 16, t
 var SSDrone = new Spritesheet( createSource.img( "src/assets/drone.png" ), 16, tilesheetReadyCheck );
 var SSLMFAO = new Spritesheet( createSource.img( "src/assets/lmfao/lmfaolux.png" ), 16, tilesheetReadyCheck );
 
-Townsend.spritesheet = {
+TSINTERFACE.spritesheet = {
 	placeholders: SSPlaceholders,
 	DFDefault: SSDFDefault,
 	grounds: SSGrounds,

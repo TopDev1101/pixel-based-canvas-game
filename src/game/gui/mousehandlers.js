@@ -5,7 +5,7 @@
  * @param {MouseEvent} event mouse event
  */
 function handle_elementHover(self, event) {
-    Townsend.viewContext.requestRedraw();
+    TSINTERFACE.viewContext.requestRedraw();
     var tileSize = self.viewContext.tileScaleHelper.tileSize,
         position = self.position, // Mouse position, In pixels
         pixelOffset = self.parentViewComponent.pixelOffset, // View offset, in pixels
@@ -20,17 +20,17 @@ function handle_elementHover(self, event) {
         .forEach( (x)=>{ return x; } )  	// ¯\_(ツ)_/¯
         .unmutate();
 
-    if(Townsend.World && Townsend.tooltip){
-        entities = Townsend.World.entities.filter( (x)=>{return x.isHovered;} );
+    if(TSINTERFACE.World && TSINTERFACE.tooltip){
+        entities = TSINTERFACE.World.entities.filter( (x)=>{return x.isHovered;} );
         
         var names = entities.map((e)=>{return e.attributes.name}).join("\n");
         desc+=names;
         if(desc.length >=1){
-            Townsend.tooltip.reset();
-            Townsend.tooltip.updateDesc( desc );
-            Townsend.tooltip.show();
+            TSINTERFACE.tooltip.reset();
+            TSINTERFACE.tooltip.updateDesc( desc );
+            TSINTERFACE.tooltip.show();
         }else{
-            Townsend.tooltip.hide();
+            TSINTERFACE.tooltip.hide();
         }
     }
     document.title = JSON.stringify(self.tile);
@@ -40,17 +40,17 @@ function handle_elementHover(self, event) {
  * For global stuff
  */
 function handle_globalHover(self, event){
-    if(Townsend.tooltip){
-        Townsend.tooltip.updatePosition(self.position.x,self.position.y);
+    if(TSINTERFACE.tooltip){
+        TSINTERFACE.tooltip.updatePosition(self.position.x,self.position.y);
     }
     self.lastMousePosition = new Vector( event.clientX, event.clientY );
 }
 
 function handle_placeBlock( self, event ){
-    if(!Townsend.World) return;
+    if(!TSINTERFACE.World) return;
 
     if( self.mousedown && self.events.onmousedown.button == 0 ){
-        if( Object.className(Townsend.World.getTile( ...self.tile.values )) != "WallTile" ){
+        if( Object.className(TSINTERFACE.World.getTile( ...self.tile.values )) != "WallTile" ){
             self.tilePlaceFunction( ...self.tile.values );
             self.viewContext.frameNeedsUpdate = true;
         }
@@ -71,11 +71,11 @@ function handle_moveMap( self, event ){
 // Events and stuff
 
 function handle_elementMousedown( self, event ){
-    if(!Townsend.World) return;
-    Townsend.viewContext.requestRedraw();
+    if(!TSINTERFACE.World) return;
+    TSINTERFACE.viewContext.requestRedraw();
     
     self.mousedown = true;
-    var objAtLocation = Townsend.World.getTile( ...self.tile.values );
+    var objAtLocation = TSINTERFACE.World.getTile( ...self.tile.values );
     if( event.button==0 ){
         self.tilePlaceFunction( ...self.tile.values );
     }
@@ -85,7 +85,7 @@ function handle_elementMousedown( self, event ){
 
 function handle_elementMouseup( self, event ){
     
-    Townsend.viewContext.requestRedraw();
+    TSINTERFACE.viewContext.requestRedraw();
     self.mousedown = false;
 }
 
@@ -93,7 +93,7 @@ function handle_debugScrollIncriment( self, event ){
     var signX = Math.sign( event.deltaY ),
         output = "";
     // Debug stuff goes here
-    Townsend.VCTSH.scale-=0.25*signX;
+    TSINTERFACE.VCTSH.scale-=0.25*signX;
     
     document.title = self.viewContext.tileScaleHelper.scale;
     self.viewContext.frameNeedsUpdate = true;

@@ -2,9 +2,9 @@ class TileSpriteBush extends TileSprite{
     constructor( tile ){
         super( tile );
         this.isSolidSprite = true; // If the sprite occupies all 16x16 pixels
-        this.source = Townsend.spritesheet.plants1;
+        this.source = TSINTERFACE.spritesheet.plants1;
         this.staticSpriteLocation = this.source.getTileAt( 0, 0 );
-        this.staticGroundLocation = Townsend.spritesheet.grounds.getTileAt(0,3);
+        this.staticGroundLocation = TSINTERFACE.spritesheet.grounds.getTileAt(0,3);
         this.spritePixelOffset = new Vector( 0,2 );
         this.spritePixelOverflowOffset = this.calculateOverflowOffset();
 

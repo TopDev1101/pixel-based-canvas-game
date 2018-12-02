@@ -31,7 +31,7 @@ class RenderingManager{
 
 			canvas.style.zIndex = (arr-i)*100;
 
-			Townsend.Window.on("resize", ()=>{
+			TSINTERFACE.Window.on("resize", ()=>{
 				canvas.width = window.innerWidth;
 				canvas.height = window.innerHeight;		
 				context.imageSmoothingEnabled = false;		

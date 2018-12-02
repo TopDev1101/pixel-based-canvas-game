@@ -21,14 +21,14 @@ class TileSpriteGrass extends TileSprite{
 		if( false && Math.random() < 0.05){
 			// Big plants
 			randomSprite= Math.floor(Math.random()* 6);
-			this.staticGroundLocation = Townsend.spritesheet.grounds.getTileAt(0,4);
-            randomSpriteLocation = Townsend.spritesheet.plants1.getTileAt( 1, randomSprite );
-			TileSprite.drawLayeredTile( Townsend.spritesheet.plants1, chunk, randomSpriteLocation, this.spritePixelOffset, this.spritePixelOverflowOffset, pCoordVect );
+			this.staticGroundLocation = TSINTERFACE.spritesheet.grounds.getTileAt(0,4);
+            randomSpriteLocation = TSINTERFACE.spritesheet.plants1.getTileAt( 1, randomSprite );
+			TileSprite.drawLayeredTile( TSINTERFACE.spritesheet.plants1, chunk, randomSpriteLocation, this.spritePixelOffset, this.spritePixelOverflowOffset, pCoordVect );
 		}else{
 			// Grass overlays
 			randomSprite= Math.floor(Math.random()* 6);
-			randomSpriteLocation = Townsend.spritesheet.plants1.getTileAt( 4, randomSprite );
-			Townsend.spritesheet.plants1.drawTile(
+			randomSpriteLocation = TSINTERFACE.spritesheet.plants1.getTileAt( 4, randomSprite );
+			TSINTERFACE.spritesheet.plants1.drawTile(
 				chunk.renderer.canvasOverflowCtx,
 				randomSpriteLocation,
 				pCoordVect,

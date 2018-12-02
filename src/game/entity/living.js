@@ -63,7 +63,7 @@ class AttributeManagerEntityLiving{
 		return this.entity.tilePositionDiff.scale(
 			(this.entity.ticksSinceLastTileTransition) /
 			this.ticksPerTileTransition
-		).scale(Townsend.VCTSH.tileSize);
+		).scale(TSINTERFACE.VCTSH.tileSize);
 	}
     
     get tileTransitionInterval(){
@@ -117,7 +117,7 @@ class EntityLiving extends Entity{
 	 * @param {Function} profile entity profile query Function->boolean
 	 */
 	queryEntities( profile ){
-		return Townsend.World.entities.filter( profile );
+		return TSINTERFACE.World.entities.filter( profile );
 	}
 	
 	resetIdleTimer(){
@@ -202,7 +202,7 @@ class EntityLiving extends Entity{
 			this.nextGlobalTilePosition = this.pathfindingAI.path.pop()
 			this.tilePositionDiff = this.globalTilePosition.subtract( this.nextGlobalTilePosition ).scale(-1);
 			// Find new path if current one is blocked by obstacle [11/6/18]
-			if( !EntityLiving.pathfindingDetectObsticle( Townsend.World.getTile( ...this.nextGlobalTilePosition.values ) ) ){
+			if( !EntityLiving.pathfindingDetectObsticle( TSINTERFACE.World.getTile( ...this.nextGlobalTilePosition.values ) ) ){
 
 				// Switch the action, handle the event
 				this.tilePositionDiff = new Vector(0,0);

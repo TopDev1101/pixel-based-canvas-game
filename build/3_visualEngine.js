@@ -131,7 +131,7 @@ class RenderingManager{
 
 			canvas.style.zIndex = (arr-i)*100;
 
-			Townsend.Window.on("resize", ()=>{
+			TSINTERFACE.Window.on("resize", ()=>{
 				canvas.width = window.innerWidth;
 				canvas.height = window.innerHeight;		
 				context.imageSmoothingEnabled = false;		
@@ -580,12 +580,12 @@ class TileScaleHelper {
 	}
 
 	adjustPixelOffset(){
-		Townsend.viewContext.pixelOffset.x-=window.innerWidth/2;
-		Townsend.viewContext.pixelOffset.y-=window.innerHeight/2;
-		Townsend.viewContext.pixelOffset.x*=this.tileSize/this.lastTileSize;
-		Townsend.viewContext.pixelOffset.y*=this.tileSize/this.lastTileSize;
-		Townsend.viewContext.pixelOffset.x+=window.innerWidth/2;
-		Townsend.viewContext.pixelOffset.y+=window.innerHeight/2;
+		TSINTERFACE.viewContext.pixelOffset.x-=window.innerWidth/2;
+		TSINTERFACE.viewContext.pixelOffset.y-=window.innerHeight/2;
+		TSINTERFACE.viewContext.pixelOffset.x*=this.tileSize/this.lastTileSize;
+		TSINTERFACE.viewContext.pixelOffset.y*=this.tileSize/this.lastTileSize;
+		TSINTERFACE.viewContext.pixelOffset.x+=window.innerWidth/2;
+		TSINTERFACE.viewContext.pixelOffset.y+=window.innerHeight/2;
 	}
 
 	get scale(){
@@ -635,7 +635,7 @@ class TileScaleHelper {
 	}
 
 	static getChunksInViewRange(){
-		var viewContext = Townsend.viewContext;
+		var viewContext = TSINTERFACE.viewContext;
 		var scaleHelper = viewContext.tileScaleHelper;
 		var viewedChunkSize = scaleHelper.chunkSize;
 		var xSize = window.innerWidth/viewedChunkSize;
@@ -671,6 +671,7 @@ class TileViewContext extends ViewContext{
 		this.frameTimeLast = new Date().getTime();
 		this.visualUpdateInterval = 15;
 		this.pixelOffset = new Vector(window.innerWidth/2, window.innerHeight/2);
+		this.frameMoved = true;
 		this.frameNeedsUpdate = true;
 		this.tileSize = cfg.tile_size;
 		this.tileScaleHelper = new TileScaleHelper( self );
@@ -680,6 +681,7 @@ class TileViewContext extends ViewContext{
 		this.animations = {
 			zoom:{ timeStart:0, goal:0 }
 		}
+		this.chunkcache = [];
 	}
 
 	get canvas(){
@@ -723,16 +725,17 @@ class TileViewContext extends ViewContext{
 	
 	static t3_frameDrawRoutine(  ){
 		if(!cfg.t3_routineEnable_drawFrame) return;
-		if(cfg.render_dynamic_only && !Townsend.VC.frameNeedsUpdate){
-			if(Townsend.VC.frameCounter%1000==0){
+		if(cfg.render_dynamic_only && !TSINTERFACE.VC.frameNeedsUpdate){
+			if(TSINTERFACE.VC.frameCounter%1000==0){
 				// Randomly force frame to update
-				Townsend.VC.frameNeedsUpdate = true;
+				TSINTERFACE.VC.frameNeedsUpdate = true;
 			}
 			return;
 		}else{
-			TileViewContext.clearViewspace( Townsend.CVSCTX.frame );
-			Townsend.CVSCTX.frame.drawImage( Townsend.canvases.ground, 0, 0 );
-			Townsend.CVSCTX.frame.drawImage( Townsend.canvases.overflow, 0, 0 );
+			// Clears then compsites 
+			TileViewContext.clearViewspace( TSINTERFACE.CVSCTX.frame );
+			TSINTERFACE.CVSCTX.frame.drawImage( TSINTERFACE.canvases.ground, 0, 0 );
+			TSINTERFACE.CVSCTX.frame.drawImage( TSINTERFACE.canvases.overflow, 0, 0 );
 		}
 	}
 
@@ -745,37 +748,54 @@ class TileViewContext extends ViewContext{
 	}
 
 	static t3_viewRangeUpdate(){
-		Townsend.viewContext.chunkViewRange = TileScaleHelper.getChunksInViewRange( Townsend.viewContext );
+		// Store last view range, update new view range
+		TSINTERFACE.VC.lastChunkViewRange = TSINTERFACE.VC.chunkViewRange;
+		TSINTERFACE.VC.chunkViewRange = TileScaleHelper.getChunksInViewRange( TSINTERFACE.viewContext );
+
+		// Check to see if the frame was moved, determined by a difference in view ranges
+		TSINTERFACE.VC.frameMoved = TSINTERFACE.VC.chunkViewRange.equals( TSINTERFACE.VC.lastChunkViewRange );
 	}
 
 	static t3_chunkDrawRoutine(  ){
 		if(!cfg.t3_routineEnable_drawChunk) return;
-		TileViewContext.clearViewspace( Townsend.CVSCTX.ground );
-		TileViewContext.clearViewspace( Townsend.CVSCTX.overflow );
+		TileViewContext.clearViewspace( TSINTERFACE.CVSCTX.ground );
+		TileViewContext.clearViewspace( TSINTERFACE.CVSCTX.overflow );
 
-		var chunkRange = Townsend.viewContext.chunkViewRange,
+		var chunkRange = TSINTERFACE.viewContext.chunkViewRange,
 			chunk = null;
 
-		nestedIncriment([0,0], [chunkRange.z, chunkRange.a], (x, y) => {
-			var relX = x + chunkRange.x,
-				relY = y + chunkRange.y;
-			chunk = Townsend.World.getChunk( relX, relY );
-			if( chunk ){
-				chunk.renderer.t3_drawProtocol();
-				Townsend.viewContext.t3_renderChunk( chunk, relX, relY );
-			}
-		});
-		Townsend.safety.heapWatch();
+		// Reset chunk cache and redraw if the frame was moved
+		if(TSINTERFACE.VC.frameMoved){
+			TSINTERFACE.VC.chunkcache = [];
+			nestedIncriment([0,0], [chunkRange.z, chunkRange.a], (x, y) => {
+				var relX = x + chunkRange.x,
+					relY = y + chunkRange.y;
+				chunk = TSINTERFACE.World.getChunk( relX, relY );
+				if( chunk ){
+					chunk.renderer.t3_drawProtocol();
+					TSINTERFACE.viewContext.t3_renderChunk( chunk, relX, relY );
+					TSINTERFACE.VC.chunkcache.push( {chunk:chunk, relX:relX, relY:relY} );
+				}
+			});
+		}else{
+			TSINTERFACE.VC.chunkcache.map( (chunkPayload)=>{
+				chunkPayload.chunk.renderer.t3_drawProtocol();
+				TSINTERFACE.viewContext.t3_renderChunk( chunkPayload.chunk, chunkPayload.relX, chunkPayload.relY );
+			});
+		}
+		
+		// Memory safety
+		TSINTERFACE.safety.heapWatch();
 
 		// Async load chunks
 		if(cfg.debug_chunk_backgroundload_disable){ return; }
-		if(Townsend.World.chunkNeedsPrerender.length==0){
-			Townsend.VC.doFrameSkips = false;
+		if(TSINTERFACE.World.chunkNeedsPrerender.length==0){
+			TSINTERFACE.VC.doFrameSkips = false;
 			return;
 		}else{
-			Townsend.VC.doFrameSkips = cfg.render_enable_frame_skip; 
+			TSINTERFACE.VC.doFrameSkips = cfg.render_enable_frame_skip; 
 		}
-		chunk = Townsend.World.chunkNeedsPrerender.pop();
+		chunk = TSINTERFACE.World.chunkNeedsPrerender.pop();
 		if(!chunk.renderer.firstRenderDone){
 			chunk.renderer.t3_drawProtocol();
 		}
@@ -784,7 +804,7 @@ class TileViewContext extends ViewContext{
 
 	static t3_entityPlaceholdersDrawRoutine( entity ){
 		var placeholderCanvas = entity.sprite.placeholderCanvas;
-		Townsend.CVSCTX.rendering.drawImage( placeholderCanvas, entity.sprite.lastDrawRegion.x, entity.sprite.lastDrawRegion.y );
+		TSINTERFACE.CVSCTX.rendering.drawImage( placeholderCanvas, entity.sprite.lastDrawRegion.x, entity.sprite.lastDrawRegion.y );
 	}
 
 	/**
@@ -792,24 +812,24 @@ class TileViewContext extends ViewContext{
 	 */
 	static t3_entityDrawRoutine(){
 		if(!cfg.t3_routineEnable_drawEntity) return;
-		TileViewContext.clearViewspace( Townsend.CVSCTX.entities );
-		var ctx = Townsend.CVSCTX.entities;
+		TileViewContext.clearViewspace( TSINTERFACE.CVSCTX.entities );
+		var ctx = TSINTERFACE.CVSCTX.entities;
 
-		var chunkRange = Townsend.viewContext.chunkViewRange.add( Townsend.placeholders.chunkExtendVector );
+		var chunkRange = TSINTERFACE.viewContext.chunkViewRange.add( TSINTERFACE.placeholders.chunkExtendVector );
 		/*
 			Checks if entity is within view range (chunk-wise), renders if so.
 		*/
 
 
-		Townsend.World.entities.map( ( entity )=>{
+		TSINTERFACE.World.entities.map( ( entity )=>{
 			if(chunkRange.includes( entity.chunk.position )){
 				var region = entity.sprite.lastDrawRegion;
 				if(cfg.render_dynamic_only){
 					// Clear the region the entity was at and fill it back with the frame
-					Townsend.CVSCTX.rendering.clearRect( ...entity.sprite.lastDrawRegion.values );
-					Townsend.CVSCTX.rendering.drawImage( Townsend.canvases.frame, ...region.values, ...region.values );
+					TSINTERFACE.CVSCTX.rendering.clearRect( ...entity.sprite.lastDrawRegion.values );
+					TSINTERFACE.CVSCTX.rendering.drawImage( TSINTERFACE.canvases.frame, ...region.values, ...region.values );
 				}
-				Townsend.viewContext.t3_renderEntity( entity );
+				TSINTERFACE.viewContext.t3_renderEntity( entity );
 				if(cfg.debug_show_entity_drawRegion){
 					var dr = entity.sprite.lastDrawRegion;
 					ctx.beginPath();
@@ -829,18 +849,18 @@ class TileViewContext extends ViewContext{
 	 */
 	t3_renderChunk( chunk, relX, relY ){
 		// Where the chunk is presented on screen
-		var screenX = relX * Townsend.VCTSH.chunkSize + Townsend.viewContext.pixelOffset.x;
-		var screenY = relY * Townsend.VCTSH.chunkSize + Townsend.viewContext.pixelOffset.y;
-		Townsend.CVSCTX.ground.drawImage( chunk.renderer.canvas, screenX, screenY, Townsend.VCTSH.chunkSize, Townsend.VCTSH.chunkSize );
-		Townsend.CVSCTX.overflow.drawImage( chunk.renderer.canvasOverflow, screenX, screenY-Townsend.VCTSH.tileSize, Townsend.VCTSH.chunkSize, Townsend.VCTSH.chunkSize );
+		var screenX = relX * TSINTERFACE.VCTSH.chunkSize + TSINTERFACE.viewContext.pixelOffset.x;
+		var screenY = relY * TSINTERFACE.VCTSH.chunkSize + TSINTERFACE.viewContext.pixelOffset.y;
+		TSINTERFACE.CVSCTX.ground.drawImage( chunk.renderer.canvas, screenX, screenY, TSINTERFACE.VCTSH.chunkSize, TSINTERFACE.VCTSH.chunkSize );
+		TSINTERFACE.CVSCTX.overflow.drawImage( chunk.renderer.canvasOverflow, screenX, screenY-TSINTERFACE.VCTSH.tileSize, TSINTERFACE.VCTSH.chunkSize, TSINTERFACE.VCTSH.chunkSize );
 		if( cfg.debug_show_chunk_region ) this.debugRenderChunkRegion( chunk, screenX, screenY );
 	}
 
 	debugRenderChunkRegion( chunk, screenX, screenY ){
-		var ctx = Townsend.CVSCTX.rendering;
+		var ctx = TSINTERFACE.CVSCTX.rendering;
 		ctx.fillStyle = chunk.renderer.debug_color;
-		ctx.fillRect( screenX, screenY, Townsend.VCTSH.chunkSize, Townsend.VCTSH.chunkSize );
-		ctx.font = `${Townsend.VCTSH}px`;
+		ctx.fillRect( screenX, screenY, TSINTERFACE.VCTSH.chunkSize, TSINTERFACE.VCTSH.chunkSize );
+		ctx.font = `${TSINTERFACE.VCTSH}px`;
 		ctx.fillStyle = "white";
 		ctx.fillText( JSON.stringify(chunk.position.values), screenX, screenY+20 );
 	}
@@ -862,20 +882,20 @@ class TileViewContext extends ViewContext{
 			// Routine for dynamic-sprite-only rendering 
 			// 30% slower on 2x2 map with 100 entities
 			// 10-20 fps faster on 20x20 map with 10 entities
-			if(Townsend.VC.frameNeedsUpdate){
+			if(TSINTERFACE.VC.frameNeedsUpdate){
 				// If the view frame is moved, redraw the entire scene
-				TileViewContext.clearViewspace( Townsend.CVSCTX.rendering );
-				Townsend.CVSCTX.rendering.drawImage( Townsend.canvases.frame, 0, 0 );
-				Townsend.CVSCTX.rendering.drawImage( Townsend.canvases.entities, 0, 0 );
-				Townsend.VC.frameNeedsUpdate = false;
+				TileViewContext.clearViewspace( TSINTERFACE.CVSCTX.rendering );
+				TSINTERFACE.CVSCTX.rendering.drawImage( TSINTERFACE.canvases.frame, 0, 0 );
+				TSINTERFACE.CVSCTX.rendering.drawImage( TSINTERFACE.canvases.entities, 0, 0 );
+				TSINTERFACE.VC.frameNeedsUpdate = false;
 			}else{
 				// If the viewframe is stationary, redraw entities
-				Townsend.CVSCTX.rendering.drawImage( Townsend.canvases.entities, 0, 0 );
+				TSINTERFACE.CVSCTX.rendering.drawImage( TSINTERFACE.canvases.entities, 0, 0 );
 			}
 		}else{	// Routine for full scene rendering
-			TileViewContext.clearViewspace( Townsend.CVSCTX.rendering );
-			Townsend.CVSCTX.rendering.drawImage( Townsend.canvases.frame, 0, 0 );
-			Townsend.CVSCTX.rendering.drawImage( Townsend.canvases.entities, 0, 0 );
+			TileViewContext.clearViewspace( TSINTERFACE.CVSCTX.rendering );
+			TSINTERFACE.CVSCTX.rendering.drawImage( TSINTERFACE.canvases.frame, 0, 0 );
+			TSINTERFACE.CVSCTX.rendering.drawImage( TSINTERFACE.canvases.entities, 0, 0 );
 		}
 		
 		
@@ -909,7 +929,7 @@ class TileViewContext extends ViewContext{
     }
 
     static redraw( self ){
-		if( self.fps <= 60 && self.frameCounter % cfg.render_frame_skip == 0 && Townsend.VC.doFrameSkips){
+		if( self.fps <= 60 && self.frameCounter % cfg.render_frame_skip == 0 && TSINTERFACE.VC.doFrameSkips){
 			setTimeout( ()=>{TileViewContext.draw( self ); }, 1000/self.fps );
 			return;
 		}
@@ -936,13 +956,13 @@ class TileViewContext extends ViewContext{
 
 
 	static DEPRECIATED_drawRoutine_tile( routineData ){
-		var range = TileScaleHelper.getViewRange( Townsend.viewContext ),
+		var range = TileScaleHelper.getViewRange( TSINTERFACE.viewContext ),
 			tileNode = null,
 			// NOTE
 			// A new drawPacket is created every frame update
 			// potential optimization would be to create a single global instance
 			dataPacket = new TileDrawPacket( routineData, range ); // Defined in game/render/routines/tiledraw.js
-		Townsend.analytics.range = range;
+		TSINTERFACE.analytics.range = range;
 		nestedIncriment([-1, -1], [range.z+5, range.a+5], (x, y) => {
 			tileNode = routineData.world.getObject(x + range.x, y + range.y);
 			if( tileNode ){
@@ -956,7 +976,7 @@ class TileViewContext extends ViewContext{
 					}
 					tileNode.object.drawRoutine(dataPacket);
 				} else {
-					Townsend.Tile.empty.drawRoutine(dataPacket);
+					TSINTERFACE.Tile.empty.drawRoutine(dataPacket);
 				}
 			}
 		});

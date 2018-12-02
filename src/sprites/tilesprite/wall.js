@@ -5,7 +5,7 @@ class TileSpriteWall extends TileSpriteNeighbourDependent{
         super( tile );
         this.spriteLocation = null;
         this.requestSpriteUpdate = true;
-        this.source = Townsend.spritesheet.walls;
+        this.source = TSINTERFACE.spritesheet.walls;
         this.atlasKey = new Vector(0,0);
     }
 

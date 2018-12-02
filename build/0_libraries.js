@@ -548,6 +548,7 @@ class Vector{
 	equals( _Vector ){
 		var self = this,
 			out = ( this == _Vector );
+		if(!_Vector) return false;
 		if( self.uvLength == _Vector.uvLength ){
 			var match = 0;
 			self.values.map( ( x, index )=>{

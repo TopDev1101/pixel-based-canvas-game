@@ -107,8 +107,8 @@ class PathfindingAI{
      */
     constructor( nodeAcceptCondition, error ){
         // Constants
-        this.neighbours = Townsend.neighbourOffsetVectorList; // cfg.pathfinding_cost_vh
-        this.neighboursDiagonal = Townsend.neighbourDiagonalOffsetVectorList; // cfg.pathfinding_cost_diagonal
+        this.neighbours = TSINTERFACE.neighbourOffsetVectorList; // cfg.pathfinding_cost_vh
+        this.neighboursDiagonal = TSINTERFACE.neighbourDiagonalOffsetVectorList; // cfg.pathfinding_cost_diagonal
         this.nodeAcceptCondition = nodeAcceptCondition;
         this.cache = [];
         this.error = error ? error : new PathfindingErrorHandler();
@@ -151,7 +151,7 @@ class PathfindingAI{
         this.clearWorkingData();
         var self = this;
         this.destination = destination;
-        var object = Townsend.World.getTile( ...startingPosition.values );
+        var object = TSINTERFACE.World.getTile( ...startingPosition.values );
         var parentNode = this.createNode( object, startingPosition, null, null, destination );
         this.promise = new Promise( ( resolve, reject )=>{ self.pathfindingPromiseHandler( self, resolve, reject ); } );
         this.time = {start: new Date().getTime()};
@@ -292,7 +292,7 @@ class PathfindingAI{
                 // Make sure the node hasn't already been checked
                 if( !self.nodesMapped[ nextNodePosition.values.join("_") ] ){
                     // Check if object is valid
-                    var object = Townsend.World.getTile( ...nextNodePosition.values );
+                    var object = TSINTERFACE.World.getTile( ...nextNodePosition.values );
 
                     // Create new node if object is valid
                     if( self.nodeAcceptCondition( object ) ){

@@ -17,7 +17,7 @@ class Entity extends Actor{
 		this.previousGlobalTilePosition = this.globalTilePosition.copy();	// Previous coordinates of the entity ( for animation )
 		this.nextGlobalTilePosition = new Vector(0,0); // Next coordinate this entity will be in ( for animation )
 		this.positionOffset = new Vector(4,-4); // Offset of entity within tile-region
-		this.chunk = Townsend.World.getChunkFromTile( ...this.globalTilePosition.values ); // The chunk the entity is currently on
+		this.chunk = TSINTERFACE.World.getChunkFromTile( ...this.globalTilePosition.values ); // The chunk the entity is currently on
 		
 		// World interaction stuff
 		this.action = null;
@@ -46,7 +46,7 @@ class Entity extends Actor{
 	updatePositionalStates( x, y ){
 		this.globalTilePosition.x = x;
 		this.globalTilePosition.y = y;
-		this.chunk = Townsend.World.getChunkFromTile( ...this.globalTilePosition.values );
+		this.chunk = TSINTERFACE.World.getChunkFromTile( ...this.globalTilePosition.values );
 	}
 
 	/**
@@ -79,7 +79,7 @@ class Entity extends Actor{
 	}
 
 	update( tick ){
-		this.isHovered = this.globalTilePosition.equals( Townsend.VCCUR.tile );
+		this.isHovered = this.globalTilePosition.equals( TSINTERFACE.VCCUR.tile );
 		this.actionProtocol();
 	}
 
@@ -121,7 +121,7 @@ class Entity extends Actor{
 	 * 			( Major position )	  +		( Minor position )
 	 */
 	get globalPixelPosition(){
-		return this.globalTilePosition.scale( Townsend.VCTSH.tileSize ).add( this.positionOffset.scale( Townsend.VCTSH.coefficient ) );
+		return this.globalTilePosition.scale( TSINTERFACE.VCTSH.tileSize ).add( this.positionOffset.scale( TSINTERFACE.VCTSH.coefficient ) );
 	}
 
 	

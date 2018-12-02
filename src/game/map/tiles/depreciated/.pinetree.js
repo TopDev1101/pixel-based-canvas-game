@@ -6,19 +6,19 @@ class PineTreeTile extends TreeTile{
         this.prerenderHeight = cfg.tile_size+cfg.tile_size/2;
         this.addIdentity("pine");
 
-        this.source = Townsend.spritesheet.DFDefault;
+        this.source = TSINTERFACE.spritesheet.DFDefault;
         this.staticSpriteLocation = this.source.getTileAt( 1, 7 );
     }
 
     
     t3_draw( chunk, coordVect ){
-        Townsend.spritesheet.grass.drawTile(
+        TSINTERFACE.spritesheet.grass.drawTile(
 			chunk.renderer.canvasCtx,
-			Townsend.spritesheet.grass.getTileAt( 2, 7 ),
+			TSINTERFACE.spritesheet.grass.getTileAt( 2, 7 ),
 			coordVect,
 			cfg.tile_size, cfg.tile_size
 		);
-		Townsend.spritesheet.DFDefault.drawTile(
+		TSINTERFACE.spritesheet.DFDefault.drawTile(
 			chunk.renderer.canvasOverflowCtx,
 			this.staticSpriteLocation,
 			coordVect,

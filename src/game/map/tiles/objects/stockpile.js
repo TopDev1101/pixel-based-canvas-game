@@ -3,7 +3,7 @@ class TileStockpile extends StorageTile{
         super();
         this.isNeighbourDependent = true;
         this.sprite = new TileSpriteStockpile( this );
-        //this.sprite = new TileSpriteNonSolid( this, Townsend.spritesheet.objects, Townsend.spritesheet.objects.getSpriteAt( 0, 3 ) );
+        //this.sprite = new TileSpriteNonSolid( this, TSINTERFACE.spritesheet.objects, TSINTERFACE.spritesheet.objects.getSpriteAt( 0, 3 ) );
         this.isSpecialTile = true;
         this.addIdentity("stockpile");
     }

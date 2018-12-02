@@ -13,7 +13,7 @@ class TileDebugFNSUD extends Tile{
     on_placed( gCoordVect, world ){
 		if(!this.world){this.world = world;}
         var position = gCoordVect;
-        Townsend.neighbourMergedOffsetVectorList.map( ( offsetVector )=>{
+        TSINTERFACE.neighbourMergedOffsetVectorList.map( ( offsetVector )=>{
             var neighbourLocation = position.add(offsetVector);
             if( this.world.tileExists(...neighbourLocation.values)){
 				var extendedTileData = this.world.getTilePlus( ...neighbourLocation.values );

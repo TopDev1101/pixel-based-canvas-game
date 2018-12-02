@@ -1,20 +1,20 @@
 // Definitions
 
-Townsend.tiles.generic = new Tile();
-Townsend.tiles.empty = new TileEmpty();
-Townsend.tiles.grass = new TileGrass();
-Townsend.tiles.wall = new TileWall();
-Townsend.tiles.stone = new TileStone();
-Townsend.tiles.stoneMeta1 = new TileStone(1);
-Townsend.tiles.genericBush = new TileBush();
-Townsend.tiles.berryBush = new TileBerryBush();
-Townsend.tiles.mineHole = new TileMineHole();
-Townsend.tiles.stockpile = new TileStockpile();
-Townsend.tiles.woodPath = new TileWoodPath();
-Townsend.tiles.sand = new TileSand();
-Townsend.tiles.water = new TileWater();
+TSINTERFACE.tiles.generic = new Tile();
+TSINTERFACE.tiles.empty = new TileEmpty();
+TSINTERFACE.tiles.grass = new TileGrass();
+TSINTERFACE.tiles.wall = new TileWall();
+TSINTERFACE.tiles.stone = new TileStone();
+TSINTERFACE.tiles.stoneMeta1 = new TileStone(1);
+TSINTERFACE.tiles.genericBush = new TileBush();
+TSINTERFACE.tiles.berryBush = new TileBerryBush();
+TSINTERFACE.tiles.mineHole = new TileMineHole();
+TSINTERFACE.tiles.stockpile = new TileStockpile();
+TSINTERFACE.tiles.woodPath = new TileWoodPath();
+TSINTERFACE.tiles.sand = new TileSand();
+TSINTERFACE.tiles.water = new TileWater();
 // Debugs
-Townsend.tiles.debugFNSUD = new TileDebugFNSUD();
+TSINTERFACE.tiles.debugFNSUD = new TileDebugFNSUD();
 
 
 
@@ -24,29 +24,29 @@ Townsend.tiles.debugFNSUD = new TileDebugFNSUD();
 
 
 
-Townsend.tiles.default = Townsend.tiles.grass;
-Townsend.Tile = Townsend.tiles;
+TSINTERFACE.tiles.default = TSINTERFACE.tiles.grass;
+TSINTERFACE.Tile = TSINTERFACE.tiles;
 
-Object.values(Townsend.tiles).map( (genericTile)=>{
+Object.values(TSINTERFACE.tiles).map( (genericTile)=>{
     genericTile.addIdentity("generic");
 });
 
 // Categorizing
 
 // Sort out the tiles that can be built
-Townsend.buildableTiles = {};
-Object.keys( Townsend.tiles ).filter( (key)=>{
-    return Townsend.tiles[key].isBuildable;
+TSINTERFACE.buildableTiles = {};
+Object.keys( TSINTERFACE.tiles ).filter( (key)=>{
+    return TSINTERFACE.tiles[key].isBuildable;
 }).map( ( key )=>{
-    Townsend.buildableTiles[key] = Townsend.tiles[key];
+    TSINTERFACE.buildableTiles[key] = TSINTERFACE.tiles[key];
 } );
 
 // Sort oout the tiles that are made for debugging
-Townsend.debugTiles = {};
-Object.keys( Townsend.tiles ).filter( (key)=>{
-    return Townsend.tiles[key].isDebug;
+TSINTERFACE.debugTiles = {};
+Object.keys( TSINTERFACE.tiles ).filter( (key)=>{
+    return TSINTERFACE.tiles[key].isDebug;
 }).map( ( key )=>{
-    Townsend.debugTiles[key] = Townsend.tiles[key];
+    TSINTERFACE.debugTiles[key] = TSINTERFACE.tiles[key];
 } );
 
 /////////////////

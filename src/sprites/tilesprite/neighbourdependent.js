@@ -79,7 +79,7 @@ class TileSpriteNeighbourDependent extends TileSprite{
     t3_getSpriteMapKey( globalTileCoordVect ){
         return Tile.neighbours.map( ( offsetVector )=>{
             var neighbour = globalTileCoordVect.add( offsetVector ),
-                neighbourTileObject = Townsend.World.getTile( neighbour.x, neighbour.y );
+                neighbourTileObject = TSINTERFACE.World.getTile( neighbour.x, neighbour.y );
             // Unknown tiles
             if(!neighbourTileObject){return 1;}
             return this.neighbourCondition( neighbourTileObject ) ? 1 : 0;

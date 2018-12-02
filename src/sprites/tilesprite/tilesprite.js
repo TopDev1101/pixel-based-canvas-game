@@ -2,7 +2,7 @@
  * Simple tiles
  */
 class TileSprite extends PrerenderableSprite{
-	constructor( tile, tileSpriteSource = Townsend.spritesheet.placeholders, tileSpriteKey = new Vector(0,0) ){
+	constructor( tile, tileSpriteSource = TSINTERFACE.spritesheet.placeholders, tileSpriteKey = new Vector(0,0) ){
 		super();
 		this.tile = tile;
 		this.width = cfg.tile_size;
@@ -12,10 +12,10 @@ class TileSprite extends PrerenderableSprite{
 		this.source = tileSpriteSource;
 		this.sourceKey = tileSpriteKey;
 
-		this.defaultStaticGroundLocation = Townsend.spritesheet.grounds.getTileAt(0,0);
+		this.defaultStaticGroundLocation = TSINTERFACE.spritesheet.grounds.getTileAt(0,0);
 		// Other stuff
 		this.staticSpriteLocation = this.source.getSpriteAt( 1, 0 );
-		this.staticGroundSource = Townsend.spritesheet.grounds;
+		this.staticGroundSource = TSINTERFACE.spritesheet.grounds;
 		this.staticGroundLocation = this.defaultStaticGroundLocation;
 		this.spritePixelOffset = new Vector( 0,2 );	// The offset of a sprite
 		this.spritePixelOverflowOffset = this.calculateOverflowOffset(); // This is what Chunk.canvasOverflow is for

@@ -3,8 +3,8 @@ class TileWoodPath extends Tile{
         super();
         this.isNeighbourDependent = true;
         this.sprite = new TileSpriteNeighbourDependent( this,
-                Townsend.spritesheet.floors,
-                Townsend.spritesheet.floors.getSpriteAt( 6,0 )
+                TSINTERFACE.spritesheet.floors,
+                TSINTERFACE.spritesheet.floors.getSpriteAt( 6,0 )
             );
         this.addIdentity("wood-path");
     }

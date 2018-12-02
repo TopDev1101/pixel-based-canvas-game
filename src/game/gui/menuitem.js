@@ -20,17 +20,17 @@ class GUIMenuItem{
     }
 
     showTooltip(){
-        if( Townsend.tooltip &&  this.tooltipLabel ){
-            Townsend.tooltip.reset();
-            Townsend.tooltip.updateLabel( this.tooltipLabel );
-            if( this.tooltipDesc ){Townsend.tooltip.updateDesc( this.tooltipDesc );}
+        if( TSINTERFACE.tooltip &&  this.tooltipLabel ){
+            TSINTERFACE.tooltip.reset();
+            TSINTERFACE.tooltip.updateLabel( this.tooltipLabel );
+            if( this.tooltipDesc ){TSINTERFACE.tooltip.updateDesc( this.tooltipDesc );}
             
-            Townsend.tooltip.show();
+            TSINTERFACE.tooltip.show();
         }
     }
 
     hideTooltip(){
-        Townsend.tooltip.hide();
+        TSINTERFACE.tooltip.hide();
     }
 
     link( menuContainer ){

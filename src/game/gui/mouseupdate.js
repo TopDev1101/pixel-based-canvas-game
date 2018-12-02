@@ -18,7 +18,7 @@ class TiledCursorInteractionContext extends CursorInteractionContext{
 		self.viewContext = _ViewContext;
 		self.lastMousePosition = new Vector(0,0);
 		self.lastClickPosition = new Vector(0,0);
-		self.tilePlaceFunction = ( x, y )=> { Townsend.World.placeTile( Townsend.Tile.wall, x, y ); };
+		self.tilePlaceFunction = ( x, y )=> { TSINTERFACE.World.placeTile( TSINTERFACE.Tile.wall, x, y ); };
 	}
 
 	/**

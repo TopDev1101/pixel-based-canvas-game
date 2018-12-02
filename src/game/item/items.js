@@ -9,4 +9,4 @@ Items.pigIron = new ResourceItem( "pigIron", new Noun("pig iron", "pig iron"), S
 Items.rust = new Item( "rust", new Noun("rust", "rust"), STR.itemDesc.stone);
 Items.iron = new ResourceItem( "iron", new Noun("iron ingot"), STR.itemDesc.stone);
 
-Townsend.Item = Items;
+TSINTERFACE.Item = Items;

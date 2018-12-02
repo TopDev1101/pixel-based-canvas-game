@@ -10,7 +10,7 @@ class ChunkActor extends Actor{
 
 class Chunk extends TileMap{
     constructor( world, size, positionVector ){
-        super( size, size, {tile:Townsend.tiles.default, metadata:{}} );
+        super( size, size, {tile:TSINTERFACE.tiles.default, metadata:{}} );
         this.position = positionVector;
         this.size = size;
         this.world = world;

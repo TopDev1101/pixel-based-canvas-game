@@ -40,7 +40,7 @@ class World{
     constructor( saveData ){
 		this.entities = [];
 		this.chunkSize = cfg.world_chunkSize;
-		this.defaultTile = Townsend.tiles.default;
+		this.defaultTile = TSINTERFACE.tiles.default;
 		this.map = new UboPlane( {} ); // UboPlane<TileMap>
 		this.chunks = [];
 		this.chunkNeedsPrerender = [];
@@ -165,7 +165,7 @@ class World{
 	}
 
 	removeTile( x, y ){
-		this.placeTile( Townsend.tiles.default, x, y );
+		this.placeTile( TSINTERFACE.tiles.default, x, y );
 	}
 
 	updateloop(){
@@ -189,7 +189,7 @@ class World{
 		self.entities.map( (entity)=>{
 			entity.update(self.ticks);
 		});
-		Townsend.analytics.udps = this.udps;
+		TSINTERFACE.analytics.udps = this.udps;
 		/*
 		setTimeout( ()=>{
 			self.chunks.map( (chunk)=>{
@@ -200,7 +200,7 @@ class World{
 
 	increaseRenderedChunks(){
 		this.renderedChunks++;
-		Townsend.analytics.chunksLoaded = this.renderedChunks+"/"+this.totalChunks;
+		TSINTERFACE.analytics.chunksLoaded = this.renderedChunks+"/"+this.totalChunks;
 	}
 	
 	startTimeInterval(){
@@ -210,9 +210,9 @@ class World{
 
 	changeTime(){
 		this.time++;
-		Townsend.analytics.time = this.time;
+		TSINTERFACE.analytics.time = this.time;
 		if(!cfg.world_time_draw_enable){return;}
-		var ctx = Townsend.CVSCTX.lightsOverflow;
+		var ctx = TSINTERFACE.CVSCTX.lightsOverflow;
 		ctx.fillStyle = new Color( 10, 5, 20 ).rgbString;
 		ctx.globalAlpha = ( Math.abs( (this.time % 20) - 10 ) / 10 ) / 1.15;
 		ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
@@ -259,7 +259,7 @@ class World{
 				Math.mod( globalX, this.chunkSize ),
 				Math.mod( globalY, this.chunkSize )).payload.tile;
 		}else if(this.tileExists( globalX, globalY )){
-			return Townsend.tiles.default;
+			return TSINTERFACE.tiles.default;
 		}
 		return null;
 	}
@@ -384,19 +384,19 @@ class World{
 		if( elevation >= cfg.generation_stone_threshold){
 			var n = Math.floor(elevation*10);
 			if( n % 2 == 0 ){
-				chunk.t3_placeTile(Townsend.tiles.stone, tileX,tileY);
+				chunk.t3_placeTile(TSINTERFACE.tiles.stone, tileX,tileY);
 			}else{
-				chunk.t3_placeTile(Townsend.tiles.stoneMeta1, tileX,tileY);
+				chunk.t3_placeTile(TSINTERFACE.tiles.stoneMeta1, tileX,tileY);
 			}
 		}else if( elevation <= -cfg.generation_stone_threshold){
 			if(elevation <= -cfg.generation_stone_threshold-0.05){
-				chunk.t3_placeTile(Townsend.tiles.water, tileX,tileY);
+				chunk.t3_placeTile(TSINTERFACE.tiles.water, tileX,tileY);
 				return;
 			}
-			chunk.t3_placeTile(Townsend.tiles.sand, tileX,tileY);
+			chunk.t3_placeTile(TSINTERFACE.tiles.sand, tileX,tileY);
 			return;
 			if (Math.random() <= cfg.world_treePlacementModifier) {
-				chunk.t3_placeTile(Townsend.tiles.berryBush, tileX,tileY);
+				chunk.t3_placeTile(TSINTERFACE.tiles.berryBush, tileX,tileY);
 			}
 		}
 	}
@@ -407,7 +407,7 @@ class World{
 			var chunk = self.createChunk(cx,cy);
 			self.totalChunks++;
 			// Make sure it doesn't load over the memory limit
-			Townsend.safety.heapWatch();
+			TSINTERFACE.safety.heapWatch();
 		});
 	}
 
@@ -451,20 +451,20 @@ class World{
 	}
 
 	resizeBatchingPlaceholders(){
-		Townsend.canvases.batchLowerResizePlaceholder.height = this.height;
-		Townsend.canvases.batchLowerResizePlaceholder.width = this.width;
-		Townsend.canvases.batchOverflowResizePlaceholder.height = this.height;
-		Townsend.canvases.batchOverflowResizePlaceholder.width = this.width;
+		TSINTERFACE.canvases.batchLowerResizePlaceholder.height = this.height;
+		TSINTERFACE.canvases.batchLowerResizePlaceholder.width = this.width;
+		TSINTERFACE.canvases.batchOverflowResizePlaceholder.height = this.height;
+		TSINTERFACE.canvases.batchOverflowResizePlaceholder.width = this.width;
 	}
 
 	/**
 	 * Paste already-batched data into the placeholders to prevent the need to re-render
 	 */
 	holdBatchInPlaceholders(){
-		Townsend.CVSCTX.batchLowerResizePlaceholder.clearRect( 0,0,Townsend.canvases.batchLower.width, Townsend.canvases.batchLower.height );
-		Townsend.CVSCTX.batchOverflowResizePlaceholder.clearRect( 0,0,Townsend.canvases.batchOverflow.width, Townsend.canvases.batchOverflow.height );
-		Townsend.CVSCTX.batchLowerResizePlaceholder.drawImage( Townsend.canvases.batchLower, 0, 0 );
-		Townsend.CVSCTX.batchOverflowResizePlaceholder.drawImage( Townsend.canvases.batchOverflow, 0, 0 );
+		TSINTERFACE.CVSCTX.batchLowerResizePlaceholder.clearRect( 0,0,TSINTERFACE.canvases.batchLower.width, TSINTERFACE.canvases.batchLower.height );
+		TSINTERFACE.CVSCTX.batchOverflowResizePlaceholder.clearRect( 0,0,TSINTERFACE.canvases.batchOverflow.width, TSINTERFACE.canvases.batchOverflow.height );
+		TSINTERFACE.CVSCTX.batchLowerResizePlaceholder.drawImage( TSINTERFACE.canvases.batchLower, 0, 0 );
+		TSINTERFACE.CVSCTX.batchOverflowResizePlaceholder.drawImage( TSINTERFACE.canvases.batchOverflow, 0, 0 );
 	}
 
 	/**
@@ -480,20 +480,20 @@ class World{
 	 * Resizes the batching canvases
 	 */
 	resizeBatchingCanvases(){
-		Townsend.canvases.batchLower.height = this.height;
-		Townsend.canvases.batchLower.width = this.width;
-		Townsend.canvases.batchOverflow.height = this.height;
-		Townsend.canvases.batchOverflow.width = this.width;
-		Townsend.CVSCTX.batchLower.clearRect( 0,0,Townsend.canvases.batchLower.width, Townsend.canvases.batchLower.height );
-		Townsend.CVSCTX.batchLower.clearRect( 0,0,Townsend.canvases.batchOverflow.width, Townsend.canvases.batchOverflow.height );
+		TSINTERFACE.canvases.batchLower.height = this.height;
+		TSINTERFACE.canvases.batchLower.width = this.width;
+		TSINTERFACE.canvases.batchOverflow.height = this.height;
+		TSINTERFACE.canvases.batchOverflow.width = this.width;
+		TSINTERFACE.CVSCTX.batchLower.clearRect( 0,0,TSINTERFACE.canvases.batchLower.width, TSINTERFACE.canvases.batchLower.height );
+		TSINTERFACE.CVSCTX.batchLower.clearRect( 0,0,TSINTERFACE.canvases.batchOverflow.width, TSINTERFACE.canvases.batchOverflow.height );
 	}
 
 	/**
 	 * Restores previously pre-rendered batches to the newly resized canvases
 	 */
 	restorePreviousBatches(){
-		Townsend.CVSCTX.batchLower.drawImage( Townsend.canvases.batchLowerResizePlaceholder, this.topLeftBoundResizeDiff.x, this.topLeftBoundResizeDiff.y );
-		Townsend.CVSCTX.batchLower.drawImage( Townsend.canvases.batchLowerResizePlaceholder, this.topLeftBoundResizeDiff.x, this.topLeftBoundResizeDiff.y );
+		TSINTERFACE.CVSCTX.batchLower.drawImage( TSINTERFACE.canvases.batchLowerResizePlaceholder, this.topLeftBoundResizeDiff.x, this.topLeftBoundResizeDiff.y );
+		TSINTERFACE.CVSCTX.batchLower.drawImage( TSINTERFACE.canvases.batchLowerResizePlaceholder, this.topLeftBoundResizeDiff.x, this.topLeftBoundResizeDiff.y );
 	}
 
 	initialBatchRender(){
@@ -518,7 +518,7 @@ class ChunkActor extends Actor{
 
 class Chunk extends TileMap{
     constructor( world, size, positionVector ){
-        super( size, size, {tile:Townsend.tiles.default, metadata:{}} );
+        super( size, size, {tile:TSINTERFACE.tiles.default, metadata:{}} );
         this.position = positionVector;
         this.size = size;
         this.world = world;
@@ -774,7 +774,7 @@ class TiledCursorInteractionContext extends CursorInteractionContext{
 		self.viewContext = _ViewContext;
 		self.lastMousePosition = new Vector(0,0);
 		self.lastClickPosition = new Vector(0,0);
-		self.tilePlaceFunction = ( x, y )=> { Townsend.World.placeTile( Townsend.Tile.wall, x, y ); };
+		self.tilePlaceFunction = ( x, y )=> { TSINTERFACE.World.placeTile( TSINTERFACE.Tile.wall, x, y ); };
 	}
 
 	/**
@@ -884,7 +884,7 @@ function initializeMouseRoutine() {
  * @param {MouseEvent} event mouse event
  */
 function handle_elementHover(self, event) {
-    Townsend.viewContext.requestRedraw();
+    TSINTERFACE.viewContext.requestRedraw();
     var tileSize = self.viewContext.tileScaleHelper.tileSize,
         position = self.position, // Mouse position, In pixels
         pixelOffset = self.parentViewComponent.pixelOffset, // View offset, in pixels
@@ -899,17 +899,17 @@ function handle_elementHover(self, event) {
         .forEach( (x)=>{ return x; } )  	// ¯\_(ツ)_/¯
         .unmutate();
 
-    if(Townsend.World && Townsend.tooltip){
-        entities = Townsend.World.entities.filter( (x)=>{return x.isHovered;} );
+    if(TSINTERFACE.World && TSINTERFACE.tooltip){
+        entities = TSINTERFACE.World.entities.filter( (x)=>{return x.isHovered;} );
         
         var names = entities.map((e)=>{return e.attributes.name}).join("\n");
         desc+=names;
         if(desc.length >=1){
-            Townsend.tooltip.reset();
-            Townsend.tooltip.updateDesc( desc );
-            Townsend.tooltip.show();
+            TSINTERFACE.tooltip.reset();
+            TSINTERFACE.tooltip.updateDesc( desc );
+            TSINTERFACE.tooltip.show();
         }else{
-            Townsend.tooltip.hide();
+            TSINTERFACE.tooltip.hide();
         }
     }
     document.title = JSON.stringify(self.tile);
@@ -919,17 +919,17 @@ function handle_elementHover(self, event) {
  * For global stuff
  */
 function handle_globalHover(self, event){
-    if(Townsend.tooltip){
-        Townsend.tooltip.updatePosition(self.position.x,self.position.y);
+    if(TSINTERFACE.tooltip){
+        TSINTERFACE.tooltip.updatePosition(self.position.x,self.position.y);
     }
     self.lastMousePosition = new Vector( event.clientX, event.clientY );
 }
 
 function handle_placeBlock( self, event ){
-    if(!Townsend.World) return;
+    if(!TSINTERFACE.World) return;
 
     if( self.mousedown && self.events.onmousedown.button == 0 ){
-        if( Object.className(Townsend.World.getTile( ...self.tile.values )) != "WallTile" ){
+        if( Object.className(TSINTERFACE.World.getTile( ...self.tile.values )) != "WallTile" ){
             self.tilePlaceFunction( ...self.tile.values );
             self.viewContext.frameNeedsUpdate = true;
         }
@@ -950,11 +950,11 @@ function handle_moveMap( self, event ){
 // Events and stuff
 
 function handle_elementMousedown( self, event ){
-    if(!Townsend.World) return;
-    Townsend.viewContext.requestRedraw();
+    if(!TSINTERFACE.World) return;
+    TSINTERFACE.viewContext.requestRedraw();
     
     self.mousedown = true;
-    var objAtLocation = Townsend.World.getTile( ...self.tile.values );
+    var objAtLocation = TSINTERFACE.World.getTile( ...self.tile.values );
     if( event.button==0 ){
         self.tilePlaceFunction( ...self.tile.values );
     }
@@ -964,7 +964,7 @@ function handle_elementMousedown( self, event ){
 
 function handle_elementMouseup( self, event ){
     
-    Townsend.viewContext.requestRedraw();
+    TSINTERFACE.viewContext.requestRedraw();
     self.mousedown = false;
 }
 
@@ -972,7 +972,7 @@ function handle_debugScrollIncriment( self, event ){
     var signX = Math.sign( event.deltaY ),
         output = "";
     // Debug stuff goes here
-    Townsend.VCTSH.scale-=0.25*signX;
+    TSINTERFACE.VCTSH.scale-=0.25*signX;
     
     document.title = self.viewContext.tileScaleHelper.scale;
     self.viewContext.frameNeedsUpdate = true;
@@ -1107,7 +1107,7 @@ Items.pigIron = new ResourceItem( "pigIron", new Noun("pig iron", "pig iron"), S
 Items.rust = new Item( "rust", new Noun("rust", "rust"), STR.itemDesc.stone);
 Items.iron = new ResourceItem( "iron", new Noun("iron ingot"), STR.itemDesc.stone);
 
-Townsend.Item = Items;
+TSINTERFACE.Item = Items;
 
 /* File source: ../src/Ambitious_Dwarf///src/game/entity/ai/pathfinding.js */
 /**
@@ -1219,8 +1219,8 @@ class PathfindingAI{
      */
     constructor( nodeAcceptCondition, error ){
         // Constants
-        this.neighbours = Townsend.neighbourOffsetVectorList; // cfg.pathfinding_cost_vh
-        this.neighboursDiagonal = Townsend.neighbourDiagonalOffsetVectorList; // cfg.pathfinding_cost_diagonal
+        this.neighbours = TSINTERFACE.neighbourOffsetVectorList; // cfg.pathfinding_cost_vh
+        this.neighboursDiagonal = TSINTERFACE.neighbourDiagonalOffsetVectorList; // cfg.pathfinding_cost_diagonal
         this.nodeAcceptCondition = nodeAcceptCondition;
         this.cache = [];
         this.error = error ? error : new PathfindingErrorHandler();
@@ -1263,7 +1263,7 @@ class PathfindingAI{
         this.clearWorkingData();
         var self = this;
         this.destination = destination;
-        var object = Townsend.World.getTile( ...startingPosition.values );
+        var object = TSINTERFACE.World.getTile( ...startingPosition.values );
         var parentNode = this.createNode( object, startingPosition, null, null, destination );
         this.promise = new Promise( ( resolve, reject )=>{ self.pathfindingPromiseHandler( self, resolve, reject ); } );
         this.time = {start: new Date().getTime()};
@@ -1404,7 +1404,7 @@ class PathfindingAI{
                 // Make sure the node hasn't already been checked
                 if( !self.nodesMapped[ nextNodePosition.values.join("_") ] ){
                     // Check if object is valid
-                    var object = Townsend.World.getTile( ...nextNodePosition.values );
+                    var object = TSINTERFACE.World.getTile( ...nextNodePosition.values );
 
                     // Create new node if object is valid
                     if( self.nodeAcceptCondition( object ) ){
@@ -1471,7 +1471,7 @@ class Entity extends Actor{
 		this.previousGlobalTilePosition = this.globalTilePosition.copy();	// Previous coordinates of the entity ( for animation )
 		this.nextGlobalTilePosition = new Vector(0,0); // Next coordinate this entity will be in ( for animation )
 		this.positionOffset = new Vector(4,-4); // Offset of entity within tile-region
-		this.chunk = Townsend.World.getChunkFromTile( ...this.globalTilePosition.values ); // The chunk the entity is currently on
+		this.chunk = TSINTERFACE.World.getChunkFromTile( ...this.globalTilePosition.values ); // The chunk the entity is currently on
 		
 		// World interaction stuff
 		this.action = null;
@@ -1500,7 +1500,7 @@ class Entity extends Actor{
 	updatePositionalStates( x, y ){
 		this.globalTilePosition.x = x;
 		this.globalTilePosition.y = y;
-		this.chunk = Townsend.World.getChunkFromTile( ...this.globalTilePosition.values );
+		this.chunk = TSINTERFACE.World.getChunkFromTile( ...this.globalTilePosition.values );
 	}
 
 	/**
@@ -1533,7 +1533,7 @@ class Entity extends Actor{
 	}
 
 	update( tick ){
-		this.isHovered = this.globalTilePosition.equals( Townsend.VCCUR.tile );
+		this.isHovered = this.globalTilePosition.equals( TSINTERFACE.VCCUR.tile );
 		this.actionProtocol();
 	}
 
@@ -1575,7 +1575,7 @@ class Entity extends Actor{
 	 * 			( Major position )	  +		( Minor position )
 	 */
 	get globalPixelPosition(){
-		return this.globalTilePosition.scale( Townsend.VCTSH.tileSize ).add( this.positionOffset.scale( Townsend.VCTSH.coefficient ) );
+		return this.globalTilePosition.scale( TSINTERFACE.VCTSH.tileSize ).add( this.positionOffset.scale( TSINTERFACE.VCTSH.coefficient ) );
 	}
 
 	
@@ -1657,7 +1657,7 @@ class AttributeManagerEntityLiving{
 		return this.entity.tilePositionDiff.scale(
 			(this.entity.ticksSinceLastTileTransition) /
 			this.ticksPerTileTransition
-		).scale(Townsend.VCTSH.tileSize);
+		).scale(TSINTERFACE.VCTSH.tileSize);
 	}
     
     get tileTransitionInterval(){
@@ -1711,7 +1711,7 @@ class EntityLiving extends Entity{
 	 * @param {Function} profile entity profile query Function->boolean
 	 */
 	queryEntities( profile ){
-		return Townsend.World.entities.filter( profile );
+		return TSINTERFACE.World.entities.filter( profile );
 	}
 	
 	resetIdleTimer(){
@@ -1796,7 +1796,7 @@ class EntityLiving extends Entity{
 			this.nextGlobalTilePosition = this.pathfindingAI.path.pop()
 			this.tilePositionDiff = this.globalTilePosition.subtract( this.nextGlobalTilePosition ).scale(-1);
 			// Find new path if current one is blocked by obstacle [11/6/18]
-			if( !EntityLiving.pathfindingDetectObsticle( Townsend.World.getTile( ...this.nextGlobalTilePosition.values ) ) ){
+			if( !EntityLiving.pathfindingDetectObsticle( TSINTERFACE.World.getTile( ...this.nextGlobalTilePosition.values ) ) ){
 
 				// Switch the action, handle the event
 				this.tilePositionDiff = new Vector(0,0);
@@ -1982,7 +1982,7 @@ class Tile extends Actor{
 	 * Get a list of neighbour offsets
 	 */
 	static get neighbours(){
-		return Townsend.neighbourOffsetVectorList;
+		return TSINTERFACE.neighbourOffsetVectorList;
 	}
 
 	/**
@@ -2011,7 +2011,7 @@ class Tile extends Actor{
 	on_placed( gCoordVect, world ){
 		if(!this.world){this.world = world;}
         var position = gCoordVect;
-        Townsend.neighbourOffsetVectorList.map( ( offsetVector )=>{
+        TSINTERFACE.neighbourOffsetVectorList.map( ( offsetVector )=>{
             var neighbourLocation = position.add(offsetVector);
             if( this.world.tileExists(...neighbourLocation.values)){
 				var extendedTileData = this.world.getTilePlus( ...neighbourLocation.values );
@@ -2155,11 +2155,11 @@ class Tile extends Actor{
 	}
 
 	// Batch rendering nonsense //
-	get DEPRECIATED_batchContextOverflow(){return Townsend.viewContext.renderingManager.contexts.batchOverflow;}
-	get DEPRECIATED_batchContextLower(){return Townsend.viewContext.renderingManager.contexts.batchLower;}
+	get DEPRECIATED_batchContextOverflow(){return TSINTERFACE.viewContext.renderingManager.contexts.batchOverflow;}
+	get DEPRECIATED_batchContextLower(){return TSINTERFACE.viewContext.renderingManager.contexts.batchLower;}
 	DEPRECIATED_batchInstanceRenderProtocol( to ){
 		to = to.scale( this.tileSize );
-		this.batchInstanceDrawOverflow(to.subtract(Townsend.batch.overflowOffset));
+		this.batchInstanceDrawOverflow(to.subtract(TSINTERFACE.batch.overflowOffset));
 		this.batchInstanceDrawLower(to);
 
 	} ^/
@@ -2187,7 +2187,7 @@ class Tile extends Actor{
 		a = Math.floor((Math.floor(data.time*cfg.sprite_ground_flowFrameCoefficient)+(data.to.x-Math.sin(data.to.y/cfg.sprite_ground_flowSizeCoefficient))*states+(data.to.y)*states)%states),
 		location = tilesheet.getTileAt( cfg.sprite_ground_y, a );	// Tile Sprite location
 		//Math.round(7+(Math.abs(Math.sin( Math.floor(viewContext.frameCounter/10) + Math.pow((data.to.x+data.to.y),2)/4)))*4) 
-		Townsend.analytics.flow = a;
+		TSINTERFACE.analytics.flow = a;
 	}
 	*/
 }
@@ -2238,7 +2238,7 @@ class TileStone extends Tile{
         // Todo fix sprites for meta
         this.meta = meta;
         this.sprite = new TileSpriteMetaNeighbourDependent( this,
-            Townsend.spritesheet.walls, Townsend.spritesheet.walls.getSpriteAt(3,0) );
+            TSINTERFACE.spritesheet.walls, TSINTERFACE.spritesheet.walls.getSpriteAt(3,0) );
         this.sprite.staticGroundLocation = this.sprite.staticGroundSource.getSpriteAt(0,5);
         this.isObstacle = true;
         this.addIdentity("stone");
@@ -2322,7 +2322,7 @@ class TileStockpile extends StorageTile{
         super();
         this.isNeighbourDependent = true;
         this.sprite = new TileSpriteStockpile( this );
-        //this.sprite = new TileSpriteNonSolid( this, Townsend.spritesheet.objects, Townsend.spritesheet.objects.getSpriteAt( 0, 3 ) );
+        //this.sprite = new TileSpriteNonSolid( this, TSINTERFACE.spritesheet.objects, TSINTERFACE.spritesheet.objects.getSpriteAt( 0, 3 ) );
         this.isSpecialTile = true;
         this.addIdentity("stockpile");
     }
@@ -2366,7 +2366,7 @@ class ResourceTile extends StorageTile{
 class TileMineHole extends ResourceTile{
     constructor(){
         super();
-        this.sprite = new TileSpriteNonSolid( this, Townsend.spritesheet.objects, new Vector(0,0) );
+        this.sprite = new TileSpriteNonSolid( this, TSINTERFACE.spritesheet.objects, new Vector(0,0) );
     }
     get name(){ return "Minehole"; }
     get isBuildable(){return true;}
@@ -2383,8 +2383,8 @@ class TileWoodPath extends Tile{
         super();
         this.isNeighbourDependent = true;
         this.sprite = new TileSpriteNeighbourDependent( this,
-                Townsend.spritesheet.floors,
-                Townsend.spritesheet.floors.getSpriteAt( 6,0 )
+                TSINTERFACE.spritesheet.floors,
+                TSINTERFACE.spritesheet.floors.getSpriteAt( 6,0 )
             );
         this.addIdentity("wood-path");
     }
@@ -2408,7 +2408,7 @@ class TileDebugFNSUD extends Tile{
     on_placed( gCoordVect, world ){
 		if(!this.world){this.world = world;}
         var position = gCoordVect;
-        Townsend.neighbourMergedOffsetVectorList.map( ( offsetVector )=>{
+        TSINTERFACE.neighbourMergedOffsetVectorList.map( ( offsetVector )=>{
             var neighbourLocation = position.add(offsetVector);
             if( this.world.tileExists(...neighbourLocation.values)){
 				var extendedTileData = this.world.getTilePlus( ...neighbourLocation.values );
@@ -2421,21 +2421,21 @@ class TileDebugFNSUD extends Tile{
 /* File source: ../src/Ambitious_Dwarf///src/game/map/tiles/tiles.js */
 // Definitions
 
-Townsend.tiles.generic = new Tile();
-Townsend.tiles.empty = new TileEmpty();
-Townsend.tiles.grass = new TileGrass();
-Townsend.tiles.wall = new TileWall();
-Townsend.tiles.stone = new TileStone();
-Townsend.tiles.stoneMeta1 = new TileStone(1);
-Townsend.tiles.genericBush = new TileBush();
-Townsend.tiles.berryBush = new TileBerryBush();
-Townsend.tiles.mineHole = new TileMineHole();
-Townsend.tiles.stockpile = new TileStockpile();
-Townsend.tiles.woodPath = new TileWoodPath();
-Townsend.tiles.sand = new TileSand();
-Townsend.tiles.water = new TileWater();
+TSINTERFACE.tiles.generic = new Tile();
+TSINTERFACE.tiles.empty = new TileEmpty();
+TSINTERFACE.tiles.grass = new TileGrass();
+TSINTERFACE.tiles.wall = new TileWall();
+TSINTERFACE.tiles.stone = new TileStone();
+TSINTERFACE.tiles.stoneMeta1 = new TileStone(1);
+TSINTERFACE.tiles.genericBush = new TileBush();
+TSINTERFACE.tiles.berryBush = new TileBerryBush();
+TSINTERFACE.tiles.mineHole = new TileMineHole();
+TSINTERFACE.tiles.stockpile = new TileStockpile();
+TSINTERFACE.tiles.woodPath = new TileWoodPath();
+TSINTERFACE.tiles.sand = new TileSand();
+TSINTERFACE.tiles.water = new TileWater();
 // Debugs
-Townsend.tiles.debugFNSUD = new TileDebugFNSUD();
+TSINTERFACE.tiles.debugFNSUD = new TileDebugFNSUD();
 
 
 
@@ -2445,29 +2445,29 @@ Townsend.tiles.debugFNSUD = new TileDebugFNSUD();
 
 
 
-Townsend.tiles.default = Townsend.tiles.grass;
-Townsend.Tile = Townsend.tiles;
+TSINTERFACE.tiles.default = TSINTERFACE.tiles.grass;
+TSINTERFACE.Tile = TSINTERFACE.tiles;
 
-Object.values(Townsend.tiles).map( (genericTile)=>{
+Object.values(TSINTERFACE.tiles).map( (genericTile)=>{
     genericTile.addIdentity("generic");
 });
 
 // Categorizing
 
 // Sort out the tiles that can be built
-Townsend.buildableTiles = {};
-Object.keys( Townsend.tiles ).filter( (key)=>{
-    return Townsend.tiles[key].isBuildable;
+TSINTERFACE.buildableTiles = {};
+Object.keys( TSINTERFACE.tiles ).filter( (key)=>{
+    return TSINTERFACE.tiles[key].isBuildable;
 }).map( ( key )=>{
-    Townsend.buildableTiles[key] = Townsend.tiles[key];
+    TSINTERFACE.buildableTiles[key] = TSINTERFACE.tiles[key];
 } );
 
 // Sort oout the tiles that are made for debugging
-Townsend.debugTiles = {};
-Object.keys( Townsend.tiles ).filter( (key)=>{
-    return Townsend.tiles[key].isDebug;
+TSINTERFACE.debugTiles = {};
+Object.keys( TSINTERFACE.tiles ).filter( (key)=>{
+    return TSINTERFACE.tiles[key].isDebug;
 }).map( ( key )=>{
-    Townsend.debugTiles[key] = Townsend.tiles[key];
+    TSINTERFACE.debugTiles[key] = TSINTERFACE.tiles[key];
 } );
 
 /////////////////

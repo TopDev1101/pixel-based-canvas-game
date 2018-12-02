@@ -1,7 +1,7 @@
 class Sprite extends Actor{
     constructor(){
 		super("sprite");
-        this.source = Townsend.spritesheet.grounds;
+        this.source = TSINTERFACE.spritesheet.grounds;
         this.sources = {};
 
         this.width = cfg.tile_size;

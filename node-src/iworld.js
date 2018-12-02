@@ -13,7 +13,7 @@ class World{
     constructor( saveData ){
 		this.entities = [];
 		this.chunkSize = cfg.world_chunkSize;
-		this.defaultTile = Townsend.tiles.default;
+		this.defaultTile = TSINTERFACE.tiles.default;
 		this.map = new UboPlane( {} ); // UboPlane<TileMap>
 		this.chunks = [];
 		this.chunkNeedsPrerender = [];
@@ -138,7 +138,7 @@ class World{
 	}
 
 	removeTile( x, y ){
-		this.placeTile( Townsend.tiles.default, x, y );
+		this.placeTile( TSINTERFACE.tiles.default, x, y );
 	}
 
 	updateloop(){
@@ -162,7 +162,7 @@ class World{
 		self.entities.map( (entity)=>{
 			entity.update(self.ticks);
 		});
-		Townsend.analytics.udps = this.udps;
+		TSINTERFACE.analytics.udps = this.udps;
 		/*
 		setTimeout( ()=>{
 			self.chunks.map( (chunk)=>{
@@ -173,7 +173,7 @@ class World{
 
 	increaseRenderedChunks(){
 		this.renderedChunks++;
-		Townsend.analytics.chunksLoaded = this.renderedChunks+"/"+this.totalChunks;
+		TSINTERFACE.analytics.chunksLoaded = this.renderedChunks+"/"+this.totalChunks;
 	}
 	
 	startTimeInterval(){
@@ -183,9 +183,9 @@ class World{
 
 	changeTime(){
 		this.time++;
-		Townsend.analytics.time = this.time;
+		TSINTERFACE.analytics.time = this.time;
 		if(!cfg.world_time_draw_enable){return;}
-		var ctx = Townsend.CVSCTX.lightsOverflow;
+		var ctx = TSINTERFACE.CVSCTX.lightsOverflow;
 		ctx.fillStyle = new Color( 10, 5, 20 ).rgbString;
 		ctx.globalAlpha = ( Math.abs( (this.time % 20) - 10 ) / 10 ) / 1.15;
 		ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
@@ -232,7 +232,7 @@ class World{
 				Math.mod( globalX, this.chunkSize ),
 				Math.mod( globalY, this.chunkSize )).payload.tile;
 		}else if(this.tileExists( globalX, globalY )){
-			return Townsend.tiles.default;
+			return TSINTERFACE.tiles.default;
 		}
 		return null;
 	}
@@ -356,19 +356,19 @@ class World{
 		if( elevation >= cfg.generation_stone_threshold){
 			var n = Math.floor(elevation*10);
 			if( n % 2 == 0 ){
-				chunk.t3_placeTile(Townsend.tiles.stone, tileX,tileY);
+				chunk.t3_placeTile(TSINTERFACE.tiles.stone, tileX,tileY);
 			}else{
-				chunk.t3_placeTile(Townsend.tiles.stoneMeta1, tileX,tileY);
+				chunk.t3_placeTile(TSINTERFACE.tiles.stoneMeta1, tileX,tileY);
 			}
 		}else if( elevation <= -cfg.generation_stone_threshold){
 			if(elevation <= -cfg.generation_stone_threshold-0.05){
-				chunk.t3_placeTile(Townsend.tiles.water, tileX,tileY);
+				chunk.t3_placeTile(TSINTERFACE.tiles.water, tileX,tileY);
 				return;
 			}
-			chunk.t3_placeTile(Townsend.tiles.sand, tileX,tileY);
+			chunk.t3_placeTile(TSINTERFACE.tiles.sand, tileX,tileY);
 			return;
 			if (Math.random() <= cfg.world_treePlacementModifier) {
-				chunk.t3_placeTile(Townsend.tiles.berryBush, tileX,tileY);
+				chunk.t3_placeTile(TSINTERFACE.tiles.berryBush, tileX,tileY);
 			}
 		}
 	}
@@ -421,20 +421,20 @@ class World{
 	}
 
 	resizeBatchingPlaceholders(){
-		Townsend.canvases.batchLowerResizePlaceholder.height = this.height;
-		Townsend.canvases.batchLowerResizePlaceholder.width = this.width;
-		Townsend.canvases.batchOverflowResizePlaceholder.height = this.height;
-		Townsend.canvases.batchOverflowResizePlaceholder.width = this.width;
+		TSINTERFACE.canvases.batchLowerResizePlaceholder.height = this.height;
+		TSINTERFACE.canvases.batchLowerResizePlaceholder.width = this.width;
+		TSINTERFACE.canvases.batchOverflowResizePlaceholder.height = this.height;
+		TSINTERFACE.canvases.batchOverflowResizePlaceholder.width = this.width;
 	}
 
 	/**
 	 * Paste already-batched data into the placeholders to prevent the need to re-render
 	 */
 	holdBatchInPlaceholders(){
-		Townsend.CVSCTX.batchLowerResizePlaceholder.clearRect( 0,0,Townsend.canvases.batchLower.width, Townsend.canvases.batchLower.height );
-		Townsend.CVSCTX.batchOverflowResizePlaceholder.clearRect( 0,0,Townsend.canvases.batchOverflow.width, Townsend.canvases.batchOverflow.height );
-		Townsend.CVSCTX.batchLowerResizePlaceholder.drawImage( Townsend.canvases.batchLower, 0, 0 );
-		Townsend.CVSCTX.batchOverflowResizePlaceholder.drawImage( Townsend.canvases.batchOverflow, 0, 0 );
+		TSINTERFACE.CVSCTX.batchLowerResizePlaceholder.clearRect( 0,0,TSINTERFACE.canvases.batchLower.width, TSINTERFACE.canvases.batchLower.height );
+		TSINTERFACE.CVSCTX.batchOverflowResizePlaceholder.clearRect( 0,0,TSINTERFACE.canvases.batchOverflow.width, TSINTERFACE.canvases.batchOverflow.height );
+		TSINTERFACE.CVSCTX.batchLowerResizePlaceholder.drawImage( TSINTERFACE.canvases.batchLower, 0, 0 );
+		TSINTERFACE.CVSCTX.batchOverflowResizePlaceholder.drawImage( TSINTERFACE.canvases.batchOverflow, 0, 0 );
 	}
 
 	/**
@@ -450,20 +450,20 @@ class World{
 	 * Resizes the batching canvases
 	 */
 	resizeBatchingCanvases(){
-		Townsend.canvases.batchLower.height = this.height;
-		Townsend.canvases.batchLower.width = this.width;
-		Townsend.canvases.batchOverflow.height = this.height;
-		Townsend.canvases.batchOverflow.width = this.width;
-		Townsend.CVSCTX.batchLower.clearRect( 0,0,Townsend.canvases.batchLower.width, Townsend.canvases.batchLower.height );
-		Townsend.CVSCTX.batchLower.clearRect( 0,0,Townsend.canvases.batchOverflow.width, Townsend.canvases.batchOverflow.height );
+		TSINTERFACE.canvases.batchLower.height = this.height;
+		TSINTERFACE.canvases.batchLower.width = this.width;
+		TSINTERFACE.canvases.batchOverflow.height = this.height;
+		TSINTERFACE.canvases.batchOverflow.width = this.width;
+		TSINTERFACE.CVSCTX.batchLower.clearRect( 0,0,TSINTERFACE.canvases.batchLower.width, TSINTERFACE.canvases.batchLower.height );
+		TSINTERFACE.CVSCTX.batchLower.clearRect( 0,0,TSINTERFACE.canvases.batchOverflow.width, TSINTERFACE.canvases.batchOverflow.height );
 	}
 
 	/**
 	 * Restores previously pre-rendered batches to the newly resized canvases
 	 */
 	restorePreviousBatches(){
-		Townsend.CVSCTX.batchLower.drawImage( Townsend.canvases.batchLowerResizePlaceholder, this.topLeftBoundResizeDiff.x, this.topLeftBoundResizeDiff.y );
-		Townsend.CVSCTX.batchLower.drawImage( Townsend.canvases.batchLowerResizePlaceholder, this.topLeftBoundResizeDiff.x, this.topLeftBoundResizeDiff.y );
+		TSINTERFACE.CVSCTX.batchLower.drawImage( TSINTERFACE.canvases.batchLowerResizePlaceholder, this.topLeftBoundResizeDiff.x, this.topLeftBoundResizeDiff.y );
+		TSINTERFACE.CVSCTX.batchLower.drawImage( TSINTERFACE.canvases.batchLowerResizePlaceholder, this.topLeftBoundResizeDiff.x, this.topLeftBoundResizeDiff.y );
 	}
 
 	initialBatchRender(){

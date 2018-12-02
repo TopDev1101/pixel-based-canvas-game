@@ -46,12 +46,12 @@ class TileScaleHelper {
 	}
 
 	adjustPixelOffset(){
-		Townsend.viewContext.pixelOffset.x-=window.innerWidth/2;
-		Townsend.viewContext.pixelOffset.y-=window.innerHeight/2;
-		Townsend.viewContext.pixelOffset.x*=this.tileSize/this.lastTileSize;
-		Townsend.viewContext.pixelOffset.y*=this.tileSize/this.lastTileSize;
-		Townsend.viewContext.pixelOffset.x+=window.innerWidth/2;
-		Townsend.viewContext.pixelOffset.y+=window.innerHeight/2;
+		TSINTERFACE.viewContext.pixelOffset.x-=window.innerWidth/2;
+		TSINTERFACE.viewContext.pixelOffset.y-=window.innerHeight/2;
+		TSINTERFACE.viewContext.pixelOffset.x*=this.tileSize/this.lastTileSize;
+		TSINTERFACE.viewContext.pixelOffset.y*=this.tileSize/this.lastTileSize;
+		TSINTERFACE.viewContext.pixelOffset.x+=window.innerWidth/2;
+		TSINTERFACE.viewContext.pixelOffset.y+=window.innerHeight/2;
 	}
 
 	get scale(){
@@ -101,7 +101,7 @@ class TileScaleHelper {
 	}
 
 	static getChunksInViewRange(){
-		var viewContext = Townsend.viewContext;
+		var viewContext = TSINTERFACE.viewContext;
 		var scaleHelper = viewContext.tileScaleHelper;
 		var viewedChunkSize = scaleHelper.chunkSize;
 		var xSize = window.innerWidth/viewedChunkSize;

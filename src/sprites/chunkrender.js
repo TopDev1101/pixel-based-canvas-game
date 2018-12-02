@@ -25,7 +25,7 @@ class ChunkRenderer extends Actor{
     t3_drawProtocol(){
         this.drawCalls++;
         if( !cfg.debug_enable_newChunkRenders ) return;
-        if( !this.firstRenderDone && Townsend.allTilesheetsLoaded ){
+        if( !this.firstRenderDone && TSINTERFACE.allTilesheetsLoaded ){
             this.drawFirst();
         }
         this.drawUnrendered();

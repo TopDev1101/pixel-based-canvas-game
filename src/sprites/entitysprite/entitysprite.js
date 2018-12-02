@@ -5,7 +5,7 @@ class EntitySprite extends PrerenderableSprite{
 		if(Object.isUndefined( entity )){ throw "Error, tried constructing EntitySprite with no entity linked"; }
 		this.entity = entity;
 
-		this.source = Townsend.spritesheet.placeholders;
+		this.source = TSINTERFACE.spritesheet.placeholders;
 		this.sourceKey = this.source.getSpriteAt( 0, 1 );
 		this.spriteSource = this.source; // Disambiguation 
         this.animationStartTime = new Date().getTime();
@@ -27,11 +27,11 @@ class EntitySprite extends PrerenderableSprite{
     }
     
     get getDrawRegion(){
-        return new PlanarRangeVector( ...Townsend.VCTSH.convertGPtoSP(this.entity.globalPixelPosition.add( Townsend.viewContext.pixelOffset ).add(this.spriteShift).add(this.entity.globalPixelPosition)).values, ...this.spriteSize.scale( Townsend.VCTSH.coefficient ).values );
+        return new PlanarRangeVector( ...TSINTERFACE.VCTSH.convertGPtoSP(this.entity.globalPixelPosition.add( TSINTERFACE.viewContext.pixelOffset ).add(this.spriteShift).add(this.entity.globalPixelPosition)).values, ...this.spriteSize.scale( TSINTERFACE.VCTSH.coefficient ).values );
     }
 
 	t3_drawRoutine(){
-		var pCoordVect = this.entity.globalPixelPosition.add( Townsend.viewContext.pixelOffset ).add(this.spriteShift);
+		var pCoordVect = this.entity.globalPixelPosition.add( TSINTERFACE.viewContext.pixelOffset ).add(this.spriteShift);
 		this.wPixelCoordVect = pCoordVect;
 		if( this.needsPrerender && !this.isPrerendered && PrerenderingStats.ready ){
 			this.t3_prerender();
@@ -54,9 +54,9 @@ class EntitySprite extends PrerenderableSprite{
 		canvas.height = region.height || 1;
 		ctx.clearRect(0,0,region.width,region.height);
 		// Fills the placeholder with whatever was behind the entity
-		ctx.drawImage( Townsend.canvases.ground, ...region.values, 0, 0, region.width, region.height );
-		ctx.drawImage( Townsend.canvases.overflow, ...region.values, 0, 0, region.width, region.height );
-		ctx.drawImage( Townsend.canvases.entities, ...region.values, 0, 0, region.width, region.height );
+		ctx.drawImage( TSINTERFACE.canvases.ground, ...region.values, 0, 0, region.width, region.height );
+		ctx.drawImage( TSINTERFACE.canvases.overflow, ...region.values, 0, 0, region.width, region.height );
+		ctx.drawImage( TSINTERFACE.canvases.entities, ...region.values, 0, 0, region.width, region.height );
 		// draws the placeholder before drawing the entity
 	}
 

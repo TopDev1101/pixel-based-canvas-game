@@ -26,16 +26,16 @@ cfg.debug_show_chunk_region = false;
 cfg.debug_show_entity_drawRegion = true;
 cfg.debug_show_tile_region = true;
 
-cfg.debug_chunk_backgroundload_disable = true;
+cfg.debug_chunk_backgroundload_disable = false;
 cfg.debug_chunk_load_mode = "sync" || "async";
 cfg.debug_seed_default = "debug";
 cfg.debug_enable_newChunkRenders = true;
 
 
 // World stuff
-cfg.world_chunkSize = 32; // The size of each chunk, in tiles
+cfg.world_chunkSize = 64; // The size of each chunk, in tiles
 cfg.world_treePlacementModifier = 0.05; // The chance that a tree will be placed
-cfg.world_map_size_debug = 2;
+cfg.world_map_size_debug = 5;
 cfg.world_map_size_normal = 5;
 cfg.world_map_size_double = 8;
 cfg.world_map_size_large = 12;

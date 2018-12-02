@@ -26,7 +26,7 @@ class ChunkRenderer extends Actor{
     t3_drawProtocol(){
         this.drawCalls++;
         if( !cfg.debug_enable_newChunkRenders ) return;
-        if( !this.firstRenderDone && Townsend.allTilesheetsLoaded ){
+        if( !this.firstRenderDone && TSINTERFACE.allTilesheetsLoaded ){
             this.drawFirst();
         }
         this.drawUnrendered();
@@ -88,7 +88,7 @@ class ChunkRenderer extends Actor{
 class Sprite extends Actor{
     constructor(){
 		super("sprite");
-        this.source = Townsend.spritesheet.grounds;
+        this.source = TSINTERFACE.spritesheet.grounds;
         this.sources = {};
 
         this.width = cfg.tile_size;
@@ -191,7 +191,7 @@ var SSWalls = new Spritesheet( createSource.img( "src/assets/walls.png" ), 16, t
 var SSDrone = new Spritesheet( createSource.img( "src/assets/drone.png" ), 16, tilesheetReadyCheck );
 var SSLMFAO = new Spritesheet( createSource.img( "src/assets/lmfao/lmfaolux.png" ), 16, tilesheetReadyCheck );
 
-Townsend.spritesheet = {
+TSINTERFACE.spritesheet = {
 	placeholders: SSPlaceholders,
 	DFDefault: SSDFDefault,
 	grounds: SSGrounds,
@@ -234,7 +234,7 @@ class EntitySprite extends PrerenderableSprite{
 		if(Object.isUndefined( entity )){ throw "Error, tried constructing EntitySprite with no entity linked"; }
 		this.entity = entity;
 
-		this.source = Townsend.spritesheet.placeholders;
+		this.source = TSINTERFACE.spritesheet.placeholders;
 		this.sourceKey = this.source.getSpriteAt( 0, 1 );
 		this.spriteSource = this.source; // Disambiguation 
         this.animationStartTime = new Date().getTime();
@@ -256,11 +256,11 @@ class EntitySprite extends PrerenderableSprite{
     }
     
     get getDrawRegion(){
-        return new PlanarRangeVector( ...Townsend.VCTSH.convertGPtoSP(this.entity.globalPixelPosition.add( Townsend.viewContext.pixelOffset ).add(this.spriteShift).add(this.entity.globalPixelPosition)).values, ...this.spriteSize.scale( Townsend.VCTSH.coefficient ).values );
+        return new PlanarRangeVector( ...TSINTERFACE.VCTSH.convertGPtoSP(this.entity.globalPixelPosition.add( TSINTERFACE.viewContext.pixelOffset ).add(this.spriteShift).add(this.entity.globalPixelPosition)).values, ...this.spriteSize.scale( TSINTERFACE.VCTSH.coefficient ).values );
     }
 
 	t3_drawRoutine(){
-		var pCoordVect = this.entity.globalPixelPosition.add( Townsend.viewContext.pixelOffset ).add(this.spriteShift);
+		var pCoordVect = this.entity.globalPixelPosition.add( TSINTERFACE.viewContext.pixelOffset ).add(this.spriteShift);
 		this.wPixelCoordVect = pCoordVect;
 		if( this.needsPrerender && !this.isPrerendered && PrerenderingStats.ready ){
 			this.t3_prerender();
@@ -283,9 +283,9 @@ class EntitySprite extends PrerenderableSprite{
 		canvas.height = region.height || 1;
 		ctx.clearRect(0,0,region.width,region.height);
 		// Fills the placeholder with whatever was behind the entity
-		ctx.drawImage( Townsend.canvases.ground, ...region.values, 0, 0, region.width, region.height );
-		ctx.drawImage( Townsend.canvases.overflow, ...region.values, 0, 0, region.width, region.height );
-		ctx.drawImage( Townsend.canvases.entities, ...region.values, 0, 0, region.width, region.height );
+		ctx.drawImage( TSINTERFACE.canvases.ground, ...region.values, 0, 0, region.width, region.height );
+		ctx.drawImage( TSINTERFACE.canvases.overflow, ...region.values, 0, 0, region.width, region.height );
+		ctx.drawImage( TSINTERFACE.canvases.entities, ...region.values, 0, 0, region.width, region.height );
 		// draws the placeholder before drawing the entity
 	}
 
@@ -315,7 +315,7 @@ class EntityJob{
 class EntitySpritePerson extends EntitySprite{
 	constructor( entity ){
 		super( entity );
-		this.source = Townsend.spritesheet.people1;
+		this.source = TSINTERFACE.spritesheet.people1;
 		this.shadowSpriteSize = new Vector( 8, 16 );
 		this.shadowOffset = new Vector( -3, 2 );
 		this.shadowKey = this.source.getSpriteAt( 0,8 );
@@ -325,17 +325,17 @@ class EntitySpritePerson extends EntitySprite{
     
     get getDrawRegion(){
         return new PlanarRangeVector(
-            ...this.wPixelCoordVect.add(this.entity.attributes.pixelLocation).add(this.shadowOffset.scale( Townsend.VCTSH.coefficient )).values,
-            ...this.spriteSize.add(this.shadowSpriteSize.add(this.shadowOffset)).subtract(new Vector(0,16)).scale( Townsend.VCTSH.coefficient ).values );
+            ...this.wPixelCoordVect.add(this.entity.attributes.pixelLocation).add(this.shadowOffset.scale( TSINTERFACE.VCTSH.coefficient )).values,
+            ...this.spriteSize.add(this.shadowSpriteSize.add(this.shadowOffset)).subtract(new Vector(0,16)).scale( TSINTERFACE.VCTSH.coefficient ).values );
     }
 
 	t3_draw_shadow( pCoordVect ){
 		this.source.drawPartialSprite(
-			Townsend.CVSCTX.entities,
+			TSINTERFACE.CVSCTX.entities,
 			this.shadowKey,
 			...this.shadowSpriteSize.values,
-			pCoordVect.add( this.entity.attributes.pixelLocation ).add(this.shadowOffset.scale(Townsend.VCTSH.coefficient)),
-			...this.shadowSpriteSize.scale( Townsend.VCTSH.coefficient ).values
+			pCoordVect.add( this.entity.attributes.pixelLocation ).add(this.shadowOffset.scale(TSINTERFACE.VCTSH.coefficient)),
+			...this.shadowSpriteSize.scale( TSINTERFACE.VCTSH.coefficient ).values
 		);
 	}
 
@@ -351,12 +351,12 @@ class EntitySpritePerson extends EntitySprite{
 		var direction = this.entity.tilePositionDiff.x >= 0 ? 0 : 8;
 		this.t3_draw_shadow( pCoordVect );
 		this.source.drawPartialSprite(
-			Townsend.CVSCTX.entities,
+			TSINTERFACE.CVSCTX.entities,
 			this.source.getTileAt(4+(this.entity.attributes.sex*4), spriteKey + direction ),
 			//this.source.getTileAt( 0, 1 ),
 			...this.spriteSize.values,
 			pCoordVect,
-			...this.spriteSize.scale( Townsend.VCTSH.coefficient ).values
+			...this.spriteSize.scale( TSINTERFACE.VCTSH.coefficient ).values
 		);
 	}
 
@@ -365,12 +365,12 @@ class EntitySpritePerson extends EntitySprite{
 		var direction = this.entity.tilePositionDiff.x > 0 ? 0 : 8;
 		this.t3_draw_shadow( pCoordVect );
 		this.source.drawPartialSprite(
-			Townsend.CVSCTX.entities,
+			TSINTERFACE.CVSCTX.entities,
 			this.source.getTileAt(4+(this.entity.attributes.sex*4), spriteKey+4  + direction),
 			//this.source.getTileAt( 0, 1 ),
 			...this.spriteSize.values,
 			pCoordVect.add( this.entity.attributes.pixelLocation ),
-			...this.spriteSize.scale( Townsend.VCTSH.coefficient ).values
+			...this.spriteSize.scale( TSINTERFACE.VCTSH.coefficient ).values
 		);
 	}
 }
@@ -380,7 +380,7 @@ class EntitySpritePerson extends EntitySprite{
  * Simple tiles
  */
 class TileSprite extends PrerenderableSprite{
-	constructor( tile, tileSpriteSource = Townsend.spritesheet.placeholders, tileSpriteKey = new Vector(0,0) ){
+	constructor( tile, tileSpriteSource = TSINTERFACE.spritesheet.placeholders, tileSpriteKey = new Vector(0,0) ){
 		super();
 		this.tile = tile;
 		this.width = cfg.tile_size;
@@ -390,10 +390,10 @@ class TileSprite extends PrerenderableSprite{
 		this.source = tileSpriteSource;
 		this.sourceKey = tileSpriteKey;
 
-		this.defaultStaticGroundLocation = Townsend.spritesheet.grounds.getTileAt(0,0);
+		this.defaultStaticGroundLocation = TSINTERFACE.spritesheet.grounds.getTileAt(0,0);
 		// Other stuff
 		this.staticSpriteLocation = this.source.getSpriteAt( 1, 0 );
-		this.staticGroundSource = Townsend.spritesheet.grounds;
+		this.staticGroundSource = TSINTERFACE.spritesheet.grounds;
 		this.staticGroundLocation = this.defaultStaticGroundLocation;
 		this.spritePixelOffset = new Vector( 0,2 );	// The offset of a sprite
 		this.spritePixelOverflowOffset = this.calculateOverflowOffset(); // This is what Chunk.canvasOverflow is for
@@ -559,9 +559,9 @@ class TileSpriteBush extends TileSprite{
     constructor( tile ){
         super( tile );
         this.isSolidSprite = true; // If the sprite occupies all 16x16 pixels
-        this.source = Townsend.spritesheet.plants1;
+        this.source = TSINTERFACE.spritesheet.plants1;
         this.staticSpriteLocation = this.source.getTileAt( 0, 0 );
-        this.staticGroundLocation = Townsend.spritesheet.grounds.getTileAt(0,3);
+        this.staticGroundLocation = TSINTERFACE.spritesheet.grounds.getTileAt(0,3);
         this.spritePixelOffset = new Vector( 0,2 );
         this.spritePixelOverflowOffset = this.calculateOverflowOffset();
 
@@ -609,14 +609,14 @@ class TileSpriteGrass extends TileSprite{
 		if( false && Math.random() < 0.05){
 			// Big plants
 			randomSprite= Math.floor(Math.random()* 6);
-			this.staticGroundLocation = Townsend.spritesheet.grounds.getTileAt(0,4);
-            randomSpriteLocation = Townsend.spritesheet.plants1.getTileAt( 1, randomSprite );
-			TileSprite.drawLayeredTile( Townsend.spritesheet.plants1, chunk, randomSpriteLocation, this.spritePixelOffset, this.spritePixelOverflowOffset, pCoordVect );
+			this.staticGroundLocation = TSINTERFACE.spritesheet.grounds.getTileAt(0,4);
+            randomSpriteLocation = TSINTERFACE.spritesheet.plants1.getTileAt( 1, randomSprite );
+			TileSprite.drawLayeredTile( TSINTERFACE.spritesheet.plants1, chunk, randomSpriteLocation, this.spritePixelOffset, this.spritePixelOverflowOffset, pCoordVect );
 		}else{
 			// Grass overlays
 			randomSprite= Math.floor(Math.random()* 6);
-			randomSpriteLocation = Townsend.spritesheet.plants1.getTileAt( 4, randomSprite );
-			Townsend.spritesheet.plants1.drawTile(
+			randomSpriteLocation = TSINTERFACE.spritesheet.plants1.getTileAt( 4, randomSprite );
+			TSINTERFACE.spritesheet.plants1.drawTile(
 				chunk.renderer.canvasOverflowCtx,
 				randomSpriteLocation,
 				pCoordVect,
@@ -709,7 +709,7 @@ class TileSpriteNeighbourDependent extends TileSprite{
     t3_getSpriteMapKey( globalTileCoordVect ){
         return Tile.neighbours.map( ( offsetVector )=>{
             var neighbour = globalTileCoordVect.add( offsetVector ),
-                neighbourTileObject = Townsend.World.getTile( neighbour.x, neighbour.y );
+                neighbourTileObject = TSINTERFACE.World.getTile( neighbour.x, neighbour.y );
             // Unknown tiles
             if(!neighbourTileObject){return 1;}
             return this.neighbourCondition( neighbourTileObject ) ? 1 : 0;
@@ -726,11 +726,11 @@ class TileSpriteMetaNeighbourDependent extends TileSpriteNeighbourDependent{
     t3_getSpriteMapKey( globalTileCoordVect ){
         return Tile.neighbours.map( ( offsetVector, index )=>{
             var neighbour = globalTileCoordVect.add( offsetVector ),
-                neighbourTileObject = Townsend.World.getTile( neighbour.x, neighbour.y );
+                neighbourTileObject = TSINTERFACE.World.getTile( neighbour.x, neighbour.y );
             if(!neighbourTileObject){return 0;}
             if( index==2 && neighbourTileObject.meta != this.tile.meta){
-                var thisElevation = Townsend.World.generation.getElevationAt(globalTileCoordVect.x, globalTileCoordVect.y),
-                    belowElevation = Townsend.World.generation.getElevationAt(neighbour.x, neighbour.y);
+                var thisElevation = TSINTERFACE.World.generation.getElevationAt(globalTileCoordVect.x, globalTileCoordVect.y),
+                    belowElevation = TSINTERFACE.World.generation.getElevationAt(neighbour.x, neighbour.y);
                 if( thisElevation<=belowElevation ){
                     return 1;
                 }
@@ -748,7 +748,7 @@ class TileSpriteWall extends TileSpriteNeighbourDependent{
         super( tile );
         this.spriteLocation = null;
         this.requestSpriteUpdate = true;
-        this.source = Townsend.spritesheet.walls;
+        this.source = TSINTERFACE.spritesheet.walls;
         this.atlasKey = new Vector(0,0);
     }
 
@@ -816,7 +816,7 @@ class TileSpriteWater extends TileSpriteNeighbourDependent{
 class TileSpriteStockpile extends TileSpriteNeighbourDependent{
     constructor( tile ){
         super( tile );
-        this.source = Townsend.spritesheet.floors;
+        this.source = TSINTERFACE.spritesheet.floors;
         this.sourceKey = this.source.getSpriteAt(2,3);
         this.atlasKey = this.source.getSpriteAt(0,0);
     }
