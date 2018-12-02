@@ -7,6 +7,7 @@ var SSObjects = new Spritesheet( createSource.img( "src/assets/objects.png" ), 1
 var SSFloors = new Spritesheet( createSource.img( "src/assets/floors.png" ), 16, tilesheetReadyCheck );
 var SSWalls = new Spritesheet( createSource.img( "src/assets/walls.png" ), 16, tilesheetReadyCheck );
 var SSDrone = new Spritesheet( createSource.img( "src/assets/drone.png" ), 16, tilesheetReadyCheck );
+var SSLMFAO = new Spritesheet( createSource.img( "src/assets/lmfao/lmfaolux.png" ), 16, tilesheetReadyCheck );
 
 Townsend.spritesheet = {
 	placeholders: SSPlaceholders,
@@ -17,7 +18,8 @@ Townsend.spritesheet = {
 	objects: SSObjects,
 	floors: SSFloors,
 	walls: SSWalls,
-	drone: SSDrone
+	drone: SSDrone,
+	LMFAO: SSLMFAO
 };
 
 // SSPlaceholders

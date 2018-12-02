@@ -66,6 +66,7 @@
 + src/sprites/tilesprite/tilesprite.js
 + src/sprites/tilesprite/nonsolid.js
 + src/sprites/tilesprite/bush.js
++ src/sprites/tilesprite/grass.js
 + src/sprites/tilesprite/neighbourdependent.js
 + src/sprites/tilesprite/metaneighdep.js
 + src/sprites/tilesprite/wall.js
@@ -85,9 +86,9 @@
 
 
 	* Routines
-+ src/game/render/cursorinteractioncontext.js
-+ src/game/render/mouseupdate.js
-+ src/game/render/mousehandlers.js
++ src/game/gui/cursorinteractioncontext.js
++ src/game/gui/mouseupdate.js
++ src/game/gui/mousehandlers.js
 
 
 

@@ -71,8 +71,9 @@ Townsend.tilesheetsReady = 0;
 Townsend.allTilesheetsLoaded = false;
 var tilesheetReadyCheck = function(){
 	Townsend.tilesheetsReady++;
-	Townsend.allTilesheetsLoaded = Object.keys(Townsend.spritesheet).length == Townsend.tilesheetsReady;
-	if( Townsend.tilesheetsReady ){
+	Townsend.allTilesheetsLoaded = Object.keys(Townsend.spritesheet).length <= Townsend.tilesheetsReady;
+	console.log(`${Townsend.tilesheetsReady}/${Object.keys(Townsend.spritesheet).length} loaded`)
+	if( Townsend.allTilesheetsLoaded ){
 		console.log("All spritesheets loaded and ready to go!");
 	}
 }

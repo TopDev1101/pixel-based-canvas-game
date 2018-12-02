@@ -44,7 +44,7 @@ class ChunkRenderer extends Actor{
             coordVect.x = x;
             coordVect.y = y;
             globalTileCoordVect =this.chunk.globalTileOrigin.add( coordVect );
-            
+
             self.chunk.getObject( x, y ).payload.tile.sprite.t3_drawRoutine( self.chunk, coordVect, globalTileCoordVect );
         });
         this.firstRenderDone = true;
@@ -189,6 +189,7 @@ var SSObjects = new Spritesheet( createSource.img( "src/assets/objects.png" ), 1
 var SSFloors = new Spritesheet( createSource.img( "src/assets/floors.png" ), 16, tilesheetReadyCheck );
 var SSWalls = new Spritesheet( createSource.img( "src/assets/walls.png" ), 16, tilesheetReadyCheck );
 var SSDrone = new Spritesheet( createSource.img( "src/assets/drone.png" ), 16, tilesheetReadyCheck );
+var SSLMFAO = new Spritesheet( createSource.img( "src/assets/lmfao/lmfaolux.png" ), 16, tilesheetReadyCheck );
 
 Townsend.spritesheet = {
 	placeholders: SSPlaceholders,
@@ -199,7 +200,8 @@ Townsend.spritesheet = {
 	objects: SSObjects,
 	floors: SSFloors,
 	walls: SSWalls,
-	drone: SSDrone
+	drone: SSDrone,
+	LMFAO: SSLMFAO
 };
 
 // SSPlaceholders
@@ -582,6 +584,48 @@ class TileSpriteBush extends TileSprite{
         TileSprite.drawLayeredTile( this.source, chunk, randomSpriteLocation, this.spritePixelOffset, this.spritePixelOverflowOffset, pCoordVect );
     }
 }
+
+/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/grass.js */
+class TileSpriteGrass extends TileSprite{
+	constructor( tile ){
+        super( tile );
+        this.source = SSGrounds;
+		this.spritePixelOffset = new Vector( 0,4 );	// The offset of a sprite
+        this.spritePixelOverflowOffset = this.calculateOverflowOffset(); // This is what Chunk.canvasOverflow is for
+	}
+
+	t3_draw( chunk, pCoordVect ){
+		// Ground Grass tile
+		if( Math.random() < 0.05){
+			this.staticGroundLocation = this.source.getTileAt(0,1+Math.floor(Math.random()*2));
+		}else{
+			this.staticGroundLocation = this.defaultStaticGroundLocation;
+		}
+		this.t3_drawGround( chunk, pCoordVect );
+
+        if(!cfg.render_decals){return;}
+		// Decals
+		var randomSprite, randomSpriteLocation;
+		if( false && Math.random() < 0.05){
+			// Big plants
+			randomSprite= Math.floor(Math.random()* 6);
+			this.staticGroundLocation = Townsend.spritesheet.grounds.getTileAt(0,4);
+            randomSpriteLocation = Townsend.spritesheet.plants1.getTileAt( 1, randomSprite );
+			TileSprite.drawLayeredTile( Townsend.spritesheet.plants1, chunk, randomSpriteLocation, this.spritePixelOffset, this.spritePixelOverflowOffset, pCoordVect );
+		}else{
+			// Grass overlays
+			randomSprite= Math.floor(Math.random()* 6);
+			randomSpriteLocation = Townsend.spritesheet.plants1.getTileAt( 4, randomSprite );
+			Townsend.spritesheet.plants1.drawTile(
+				chunk.renderer.canvasOverflowCtx,
+				randomSpriteLocation,
+				pCoordVect,
+				cfg.tile_size, cfg.tile_size
+			);
+		}
+	}
+}
+
 
 /* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/neighbourdependent.js */
 class TileSpriteNeighbourDependent extends TileSprite{
