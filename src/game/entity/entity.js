@@ -79,7 +79,8 @@ class Entity extends Actor{
 	}
 
 	update( tick ){
-		this.isHovered = this.globalTilePosition.equals( TSINTERFACE.VCCUR.tile );
+		this.isHovered = this.sprite.lastDrawRegion.includes( TSINTERFACE.VCCUR.position );
+		//this.isHovered = this.globalTilePosition.equals( TSINTERFACE.VCCUR.tile );
 		this.actionProtocol();
 	}
 
