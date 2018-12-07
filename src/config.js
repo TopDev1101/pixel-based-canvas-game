@@ -35,9 +35,9 @@ cfg.debug_enable_newChunkRenders = true;
 cfg.world_chunkSize = 64; // The size of each chunk, in tiles
 cfg.world_treePlacementModifier = 0.05; // The chance that a tree will be placed
 cfg.world_map_size_debug = 5;
-cfg.world_map_size_normal = 5;
-cfg.world_map_size_double = 8;
-cfg.world_map_size_large = 12;
+cfg.world_map_size_normal = 3;
+cfg.world_map_size_double = 5;
+cfg.world_map_size_large = 6;
 cfg.world_time_draw_enable = false;
 cfg.tile_size = 16;
 // Sprite Batches

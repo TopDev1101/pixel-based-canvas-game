@@ -179,7 +179,7 @@ class PrerenderableSprite extends Sprite{
 	t3_prerender(){}
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/game/render/spritedefs.js */
+/* File source: ../src/Ambitious_Dwarf///src/engine/render/spritedefs.js */
 var SSPlaceholders = new Spritesheet( createSource.img( "src/assets/placeholder-atlas.png" ), 16, tilesheetReadyCheck );
 var SSDFDefault = new Spritesheet( createSource.img( "src/assets/DF/03.png" ), 16, tilesheetReadyCheck );
 var SSGrounds = new Spritesheet( createSource.img( "src/assets/grounds.png" ), 16, tilesheetReadyCheck );

@@ -2,5 +2,5 @@
  * Defines the main
  */
 
-function openDebugMenu(){}
-function resizeWindow(){}
+function CLIENT_openDebugMenu(){}
+function CLIENT_resizeWindow(){}

@@ -11,6 +11,48 @@ img{
 	-webkit-user-drag: none;
 }
 
+.loading-screen{
+	position: absolute;
+	top:0px;
+	bottom:0px;
+	left:0px;
+	right:0px;
+	display: none;
+	background-color:white;
+	z-index: 1000;
+	padding:2%;
+}
+
+.loading-screen .comment{
+	font-size: 18px;
+	font-color: darkgrey;
+}
+
+.loading-screen-active{
+	display: block;
+}
+
+.progress-container{
+
+}
+
+.progress-container .progress-bar{
+	width:200px;
+	height:20px;
+	border: 1px solid black;
+}
+
+.progress-container .title{
+	font-size: 20px;
+	color:black;
+}
+
+.progress-bar .progress{
+	height:100%;
+	width:0%;
+	background-color:red;
+}
+
 .tooltip{
 	position: absolute;
 	font-family: 'VT323', monospace;

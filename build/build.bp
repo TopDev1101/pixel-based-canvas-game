@@ -34,7 +34,6 @@
 	* Developmental helpers
 + src/engine/dev/debugs.js
 + src/engine/render/rendering.js
-+ src/interfacenw.js
 
 	* Source files
 
@@ -45,9 +44,9 @@
 
 
 	* Rendering stuff
-+ src/game/render/viewcontext.js
-+ src/game/render/tilescalehelper.js
-+ src/game/render/tileviewcontext.js
++ src/engine/render/viewcontext.js
++ src/engine/render/tilescalehelper.js
++ src/engine/render/tileviewcontext.js
 
 = 3_visualEngine.js
 
@@ -55,8 +54,8 @@
 
 	* Sprites
 + src/sprites/sprite.js
++ src/engine/render/spritedefs.js
 
-+ src/game/render/spritedefs.js
 	* Entity Sprites
 + src/sprites/entitysprite/entitysprite.js
 + src/sprites/entitysprite/person.js
@@ -136,7 +135,7 @@
 	* Almost init
 + src/script.js
 * + src/engine/window.js
-= 6_main.js
+= 7_main.js
 
 + src/game/gui/menuitem.js
 + src/game/gui/submenucontainer.js
@@ -146,10 +145,11 @@
 + src/game/gui/example.js
 + src/game/keybinder.js
 + src/game/keybinds.js
++ src/game/gui/loadingscreen.js
+= 6_gui.js
 
-= 7_gui.js
-
-+ src/engine/loader.js
 s null
++ src/interfacenw.js
++ src/engine/loader.js
 = loader.js
 

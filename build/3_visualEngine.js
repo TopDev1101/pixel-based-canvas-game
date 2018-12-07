@@ -204,16 +204,6 @@ class RenderingManager{
 	}
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/interfacenw.js */
-/**
- * Defines the main
- */
-
-function openDebugMenu(){
-    nw.Window.get().showDevTools();
-}
-function resizeWindow(){}
-
 /* File source: ../src/Ambitious_Dwarf///src/engine/containers/spritesources.js */
 /**
  * Tile locations are structs that tell you the space a tile occupies on a tilesheet
@@ -425,7 +415,7 @@ class Spritesheet extends Tilesheet{
 	}
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/game/render/viewcontext.js */
+/* File source: ../src/Ambitious_Dwarf///src/engine/render/viewcontext.js */
 /**
  * Has data that will be used in rendering the map
  * pixelOffset - the offset of the mapview from 0,0
@@ -531,7 +521,7 @@ class AttributeSnapshot{
  *  game/render/routines/tiledraw.js
  */
 
-/* File source: ../src/Ambitious_Dwarf///src/game/render/tilescalehelper.js */
+/* File source: ../src/Ambitious_Dwarf///src/engine/render/tilescalehelper.js */
 class TileScaleHelper {
 	constructor( _TiledViewContext ) {
 		this.propipe = new PropertyPipeline( this );
@@ -648,7 +638,7 @@ class TileScaleHelper {
 	}
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/game/render/tileviewcontext.js */
+/* File source: ../src/Ambitious_Dwarf///src/engine/render/tileviewcontext.js */
 class TileViewContext extends ViewContext{
 	constructor(){
 		super();

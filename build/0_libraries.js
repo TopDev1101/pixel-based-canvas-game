@@ -244,7 +244,7 @@ function nestedIncriment(initialValues, reachValues, callback) {
 	nest[nest.length - 1]();
 }
 
-function asyncNestedIncriment(initialValues, reachValues, callback){
+function asyncNestedIncriment(initialValues, reachValues, callback, onDone){
 	var values = initialValues.map((x) => { return x; }),
 		nest = [() => { callback(...values); }];
 
@@ -258,10 +258,12 @@ function asyncNestedIncriment(initialValues, reachValues, callback){
 				nest[index]();
 			});
 		});
-	});
 
-	// Burn the nest down
-	nest[nest.length - 1]();
+		if(index>=initialValues.length-1){
+			nest[nest.length - 1]();
+		}
+	});
+	
 }
 
 /**
@@ -1120,7 +1122,7 @@ class UboPlane{
 		if( this.getNodePointer( x, y ) ){
 			
 			// Replace it instead
-			return replaceObject( x, y, object );
+			return this.replaceObject( x, y, object );
 		}
 		
 		// Otherwise place a newly created node
@@ -1133,7 +1135,7 @@ class UboPlane{
 	*/
 	replaceObject( x, y, object ){
 		// Node which currently occupies spot
-		var node = getNode( x, y );
+		var node = this.getNode( x, y );
 		
 		// Reassign the node's content
 		this.listOfEntities.changeNodeContent( node, object );

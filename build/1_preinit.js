@@ -71,6 +71,9 @@ Townsend = {
 		empty2dVector: new Vector( 0,0 ),
 		chunkExtendVector: new PlanarRangeVector( 0, 0, 1, 1 )
 	},
+	progressBarUpdaters:{
+
+	},
 	eventEmitter: new SimpleEventEmitter(100),
 	GUI:{
 		containers:{}

@@ -28,5 +28,5 @@ keybinds.createAction( "shiftPixelOffset_ny",()=>{},
 );
 keybinds.bindAction( "shiftPixelOffset_ny", "KeyS" );
 
-keybinds.createAction("showDevTools", ()=>{ openDebugMenu(); });
+keybinds.createAction("showDevTools", ()=>{ CLIENT_openDebugMenu(); });
 keybinds.bindAction( "showDevTools", "Backquote" );

@@ -2,7 +2,7 @@ const SIMPLEX_NOISE = require("simplex-noise");
 class WorldGen{
     constructor( seed = "" ){
         this.seed = seed;
-        this.elevationNoise = new SIMPLEX_NOISE( this.seed+"stone" );
+        this.elevationNoise = CLIENT_NewSimplexNoise( this.seed+"stone" );
     }
 
     /**

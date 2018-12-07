@@ -20,14 +20,17 @@ function init() {
 
 	world = new World();
 	TSINTERFACE.World = world;
+	world.createNewMap( onWorldChunksDoneLoading);
 	
 	
 	// TSINTERFACE.locked.doBatching
-	
+}
 
-	_TileViewContext.initDrawRoutines();
-	_TileViewContext.draw();
-	_TileViewContext.tileScaleHelper.scale = 0.25;
+function onWorldChunksDoneLoading(){
+	TSINTERFACE.progressBarUpdaters.chunkRender = Townsend.loadingScreen.createProgressBar( "chunk-render", "Rendering chunks" );
+	TSINTERFACE.viewContext.initDrawRoutines();
+	TSINTERFACE.viewContext.draw();
+	TSINTERFACE.viewContext.tileScaleHelper.scale = 0.25;
 	// Well, it renders. The cursor context needs work though
 	
 	createDebugWindow();
@@ -40,6 +43,10 @@ function init() {
 	}
 
 	setupMouseHandlers( TSINTERFACE.GCUR, TSINTERFACE.VCCUR );
+}
+
+function onWorldChunksDoneRendering(){
+
 }
 
 function setupMouseHandlers( globalCursorEnv, cursorEnv ){

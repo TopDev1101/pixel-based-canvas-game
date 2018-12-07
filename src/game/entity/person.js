@@ -1,10 +1,8 @@
-function parseCensusFile( filePath ){
-	return FS.readFileSync(filePath).toString().split("\n").map( (x)=>{ var n = x.split(" ")[0]; if(n){ return n.toLowerCase().capitalize(); } } ).filter( (x)=>{ return !!x; } );
-}
 
-const NAMES_MALE = parseCensusFile( "./src/assets/lists/dist.male.first.txt" )
-const NAMES_FEMALE = parseCensusFile("./src/assets/lists/dist.female.first.txt");
-const NAMES_LAST = parseCensusFile("./src/assets/lists/dist.all.last.txt");
+
+const NAMES_MALE = CLIENT_parseCensusFile( "./src/assets/lists/dist.male.first.txt" )
+const NAMES_FEMALE = CLIENT_parseCensusFile("./src/assets/lists/dist.female.first.txt");
+const NAMES_LAST = CLIENT_parseCensusFile("./src/assets/lists/dist.all.last.txt");
 
 
 class PersonBuildJob extends EntityJob{

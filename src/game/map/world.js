@@ -19,7 +19,7 @@ class World{
 		this.seed = cfg.debug_seed_default;
 		this.generation = new WorldGen( this.seed );
 		this.noise = {
-			elevation: new SIMPLEX_NOISE( this.seed+"stone" )
+			elevation: CLIENT_NewSimplexNoise( this.seed+"stone" )
 		};
 
 		this.jobs = [];
@@ -34,8 +34,8 @@ class World{
 		this.topLeftBound = new Vector(0,0);
 		this.bottomRightBound = new Vector(0,0);
 		this.origin = new Vector(0,0);
-		this.height = 32;
-		this.width = 32;
+		this.height = cfg.world_chunkSize * this.mapLength;
+		this.width = cfg.world_chunkSize * this.mapLength;
 		this.boundsChanged = false;
 		this.paused = false;
 		this.updateInterval = cfg.update_interval_normal;
@@ -57,9 +57,6 @@ class World{
 
 		this.specialTiles = {};
 		this.specialTileLocations = {};
-
-		// No world states go after this
-		this.createNewMap();
 
 		this.timeInterval = this.startTimeInterval();
 	}
@@ -171,7 +168,8 @@ class World{
 
 	increaseRenderedChunks(){
 		this.renderedChunks++;
-		TSINTERFACE.analytics.chunksLoaded = this.renderedChunks+"/"+this.totalChunks;
+		TSINTERFACE.analytics.chunksRenderedLoaded = this.renderedChunks+"/"+this.totalChunks;
+		TSINTERFACE.progressBarUpdaters.chunkRender( this.renderedChunks / this.totalChunks * 100 );
 	}
 	
 	startTimeInterval(){
@@ -372,13 +370,28 @@ class World{
 		}
 	}
 
-	createNewMap(){
+	createNewMap( onDone ){
 		var self = this;
+		Townsend.loadingScreen.createComment(`Building a ${this.width}x${this.height} world, this might take a while...`);
+		var progressChangeFunc = Townsend.loadingScreen.createProgressBar( "chunk-create", "Creating chunks" ),
+			totalChunksToBeLoaded = self.mapLength * self.mapLength,
+			forceStop = false;
 		nestedIncriment([-Math.floor( self.mapLength/2 ),-Math.floor( self.mapLength/2)],[ self.mapLength/2 ,self.mapLength/2],( cx, cy )=>{
-			var chunk = self.createChunk(cx,cy);
-			self.totalChunks++;
-			// Make sure it doesn't load over the memory limit
-			TSINTERFACE.safety.heapWatch();
+			// This was here because of an incident with asyncNestedIncriment
+			if(forceStop){console.log(cx, cy, "couldn't force a stop."); return;}
+			
+			setTimeout( ()=>{
+				var chunk = self.createChunk(cx,cy);
+				self.totalChunks++;
+				// Make sure it doesn't load over the memory limit
+				progressChangeFunc( self.totalChunks/totalChunksToBeLoaded * 100 );
+				if(self.totalChunks >= totalChunksToBeLoaded){
+					onDone();
+					forceStop = true;
+				}
+				TSINTERFACE.safety.heapWatch();
+			}, 100);
+			
 		});
 	}
 
