@@ -143,8 +143,8 @@
 + src/game/gui/controlmenu.js
 + src/game/gui/tooltip.js
 + src/game/gui/example.js
-+ src/game/keybinder.js
-+ src/game/keybinds.js
++ src/game/gui/keybinder.js
++ src/game/gui/keybinds.js
 + src/game/gui/loadingscreen.js
 = 6_gui.js
 

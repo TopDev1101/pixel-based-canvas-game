@@ -64,6 +64,7 @@ class DebugWindow{
         element.style.wordWrap="break-word";
         element.style.fontSize=cfg.debug_window_FontSize;
         element.style.padding=3;
+        element.style.justifyContent="right";
         element.style.backgroundColor = new Color(10, 15, 25, 0.5).rgbaString;
     }
     
