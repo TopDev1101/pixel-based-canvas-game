@@ -12,6 +12,8 @@ class Keybinder{
         this.actionHeldDelay = 100; //ms
         this.keybinds = {};
 
+        this.logBindCodeToConsole = false;
+
         this.element = htmlFocusElement;
         var self = this;
         this.element.addEventListener( "keydown", ( event )=>{ self.handlerKeyDown.apply(self, [event]); } );
@@ -37,6 +39,9 @@ class Keybinder{
     handlerKeyDown( event ){
         var bindCode = this.getBindCode(event),
             action = this.keybinds[bindCode];
+        // THIS IS PURELY FOR DEBUGGING
+        // TODO REMOVE ONCE KEYBIND GUI IS IMPLEMENTED
+        if(this.logBindCodeToConsole){ console.log(bindCode); }
         if(!action){return;}
         this.actionPressed[action].callback();
         this.actionLoop[action] = action;

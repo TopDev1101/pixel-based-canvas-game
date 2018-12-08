@@ -1,4 +1,23 @@
 var keybinds = new Keybinder(document.body);
+
+class EscapeButtonHandler{
+    constructor(){
+        this.stack = [];
+    }
+
+    addToStack( callback ){
+        this.stack.push(callback);
+    }
+
+    resetStack(){
+        this.stack = [];
+    }
+
+    call(){
+        return (/*Callback*/this.stack.pop())();
+    }
+}
+
 // Positive x
 keybinds.createAction( "shiftPixelOffset_px",()=>{},
     ()=>{
@@ -30,3 +49,6 @@ keybinds.bindAction( "shiftPixelOffset_ny", "KeyS" );
 
 keybinds.createAction("showDevTools", ()=>{ CLIENT_openDebugMenu(); });
 keybinds.bindAction( "showDevTools", "Backquote" );
+
+keybinds.createAction( "toggleKeyLogging_FOR_DEBUG_DO_NOT_USE_OTHERWISE", ()=>{} );
+keybinds.bindAction( "toggleKeyLogging_FOR_DEBUG_DO_NOT_USE_OTHERWISE", "KeyB" );
