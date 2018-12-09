@@ -149,7 +149,7 @@
 = 6_gui.js
 
 s null
-+ src/interfacenw.js
++ src/interfaces/interfacenw.js
 + src/engine/loader.js
 = loader.js
 

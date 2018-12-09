@@ -1,12 +1,14 @@
 var keybinds = new Keybinder(document.body);
 
 class EscapeButtonHandler{
-    constructor(){
-        this.stack = [];
+    constructor( defaultMethod ){
+        this.stack = [defaultMethod];
+        this.defaultMethod = defaultMethod;
     }
 
     addToStack( callback ){
         this.stack.push(callback);
+        
     }
 
     resetStack(){
@@ -14,7 +16,9 @@ class EscapeButtonHandler{
     }
 
     call(){
-        return (/*Callback*/this.stack.pop())();
+        var callback = /*Callback*/this.stack.pop();
+        if(this.stack.length == 0) this.stack.push(this.defaultMethod);
+        return callback.apply(this);
     }
 }
 
@@ -50,5 +54,21 @@ keybinds.bindAction( "shiftPixelOffset_ny", "KeyS" );
 keybinds.createAction("showDevTools", ()=>{ CLIENT_openDebugMenu(); });
 keybinds.bindAction( "showDevTools", "Backquote" );
 
-keybinds.createAction( "toggleKeyLogging_FOR_DEBUG_DO_NOT_USE_OTHERWISE", ()=>{} );
-keybinds.bindAction( "toggleKeyLogging_FOR_DEBUG_DO_NOT_USE_OTHERWISE", "KeyB" );
+keybinds.createAction( "toggleKeyLogging_FOR_DEBUG_DO_NOT_USE_OTHERWISE", ()=>{keybinds.logBindCodeToConsole = true;} );
+keybinds.bindAction( "toggleKeyLogging_FOR_DEBUG_DO_NOT_USE_OTHERWISE", "ctrlKey_shiftKey_KeyB" );
+
+
+function closeEscapeMenu(){
+    console.log("Escape menu closed");
+}
+
+function openEscapeMenu(){
+    this.addToStack( closeEscapeMenu );
+    console.log("Escape menu open");
+}
+
+var escaper = new EscapeButtonHandler(openEscapeMenu);
+
+
+keybinds.createAction( "escape", ()=>{ escaper.call() } );
+keybinds.bindAction("escape", "Escape");

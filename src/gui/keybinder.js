@@ -42,7 +42,7 @@ class Keybinder{
         // THIS IS PURELY FOR DEBUGGING
         // TODO REMOVE ONCE KEYBIND GUI IS IMPLEMENTED
         if(this.logBindCodeToConsole){ console.log(bindCode); }
-        if(!action){return;}
+        if(!action||this.actionLock[action]){return;}
         this.actionPressed[action].callback();
         this.actionLoop[action] = action;
         this.actionLock[action] = true;
