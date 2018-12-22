@@ -33,7 +33,7 @@
 
 	* Developmental helpers
 + src/engine/dev/debugs.js
-+ src/engine/render/rendering.js
++ src/engine/render_t3/rendering.js
 
 	* Source files
 
@@ -44,34 +44,38 @@
 
 
 	* Rendering stuff
-+ src/engine/render/viewcontext.js
-+ src/engine/render/tilescalehelper.js
-+ src/engine/render/tileviewcontext.js
++ src/engine/render_t3/viewcontext.js
++ src/engine/render_t3/tilescalehelper.js
++ src/engine/render_t3/tileviewcontext.js
++ src/engine/render_t3/routines/chunkdraw.js
++ src/engine/render_t3/routines/entitydraw.js
++ src/engine/render_t3/routines/framedraw.js
++ src/engine/render_t3/routines/merge.js
 
-= 3_visualEngine.js
+= 3_t3_visualEngine.js
 
-+ src/sprites/chunkrender.js
++ src/sprites_t3/chunkrender.js
 
 	* Sprites
-+ src/sprites/sprite.js
-+ src/engine/render/spritedefs.js
++ src/sprites_t3/sprite.js
++ src/engine/render_t3/spritedefs.js
 
 	* Entity Sprites
-+ src/sprites/entitysprite/entitysprite.js
-+ src/sprites/entitysprite/person.js
++ src/sprites_t3/entitysprite/entitysprite.js
++ src/sprites_t3/entitysprite/person.js
 
 
 	* Tilesprites
-+ src/sprites/tilesprite/tilesprite.js
-+ src/sprites/tilesprite/nonsolid.js
-+ src/sprites/tilesprite/bush.js
-+ src/sprites/tilesprite/grass.js
-+ src/sprites/tilesprite/neighbourdependent.js
-+ src/sprites/tilesprite/metaneighdep.js
-+ src/sprites/tilesprite/wall.js
-+ src/sprites/tilesprite/sand.js
-+ src/sprites/tilesprite/water.js
-+ src/sprites/tilesprite/stockpile.js
++ src/sprites_t3/tilesprite/tilesprite.js
++ src/sprites_t3/tilesprite/nonsolid.js
++ src/sprites_t3/tilesprite/bush.js
++ src/sprites_t3/tilesprite/grass.js
++ src/sprites_t3/tilesprite/neighbourdependent.js
++ src/sprites_t3/tilesprite/metaneighdep.js
++ src/sprites_t3/tilesprite/wall.js
++ src/sprites_t3/tilesprite/sand.js
++ src/sprites_t3/tilesprite/water.js
++ src/sprites_t3/tilesprite/stockpile.js
 = 4_sprites.js
 
 
@@ -85,9 +89,9 @@
 
 
 	* Routines
-+ src/game/gui/cursorinteractioncontext.js
-+ src/game/gui/mouseupdate.js
-+ src/game/gui/mousehandlers.js
++ src/gui/cursorinteractioncontext.js
++ src/gui/mouseupdate.js
++ src/gui/mousehandlers.js
 
 
 
@@ -137,15 +141,15 @@
 * + src/engine/window.js
 = 7_main.js
 
-+ src/game/gui/menuitem.js
-+ src/game/gui/submenucontainer.js
-+ src/game/gui/submenu.js
-+ src/game/gui/controlmenu.js
-+ src/game/gui/tooltip.js
-+ src/game/gui/example.js
-+ src/game/gui/keybinder.js
-+ src/game/gui/keybinds.js
-+ src/game/gui/loadingscreen.js
++ src/gui/menuitem.js
++ src/gui/submenucontainer.js
++ src/gui/submenu.js
++ src/gui/controlmenu.js
++ src/gui/tooltip.js
++ src/gui/example.js
++ src/gui/keybinder.js
++ src/gui/keybinds.js
++ src/gui/loadingscreen.js
 = 6_gui.js
 
 s null

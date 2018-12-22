@@ -654,7 +654,7 @@ class Vector{
 	}
 
 	toString(){
-		return this.string;
+		return JSON.stringify(this);
 	}
 
 	/**
@@ -810,6 +810,10 @@ class Forterate{
 			}
 		});
 	}// callback ->
+
+	toString(){
+		return JSON.stringify(this);
+	}
 }
 
 /* File source: ../lib/javascript/jsbuilder0.0.1/containers/boplane.js */
@@ -1429,6 +1433,7 @@ class Color{
 class SimpleEventEmitter{
     constructor( maxEventHistoryLength=0 ){
         this.events = {};
+        this.onceEvents = {};
         this.eventHistory = [];
         this.eventHistoryMaxSize = maxEventHistoryLength;
     }
@@ -1436,6 +1441,7 @@ class SimpleEventEmitter{
     ensureEventIsDefined( eventName ){
         if( !this.events[eventName]){
             this.events[eventName] = [];
+            this.onceEvents[eventName] = [];
         }
     }
     
@@ -1444,11 +1450,20 @@ class SimpleEventEmitter{
         this.events[eventName].push( handler );
     }
 
+    once( eventName, handler ){
+        this.ensureEventIsDefined( eventName );
+        this.onceEvents[eventName].push( handler );
+    }
+
     emit( eventName, thisArg, ...params ){
         this.ensureEventIsDefined( eventName );
         this.events[eventName].map( (handler)=>{
             handler.apply( thisArg, params );
         });
+        while(this.onceEvents[eventName].length > 0){
+            let callback = this.onceEvents[eventName].pop();
+            callback.apply( thisArg, params );
+        }
         if(this.maxEventHistoryLength<=0) return;
         this.eventHistory[this.eventHistory.length%this.eventHistoryMaxSize] = {date:new Date().getTime(), eventName:eventName, params:params}
     }

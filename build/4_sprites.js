@@ -1,4 +1,4 @@
-/* File source: ../src/Ambitious_Dwarf///src/sprites/chunkrender.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/chunkrender.js */
 class ChunkRenderer extends Actor{
     constructor( chunk ){
         super("sprite");
@@ -84,7 +84,7 @@ class ChunkRenderer extends Actor{
 
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/sprite.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/sprite.js */
 class Sprite extends Actor{
     constructor(){
 		super("sprite");
@@ -179,7 +179,7 @@ class PrerenderableSprite extends Sprite{
 	t3_prerender(){}
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/engine/render/spritedefs.js */
+/* File source: ../src/Ambitious_Dwarf///src/engine/render_t3/spritedefs.js */
 var SSPlaceholders = new Spritesheet( createSource.img( "src/assets/placeholder-atlas.png" ), 16, tilesheetReadyCheck );
 var SSDFDefault = new Spritesheet( createSource.img( "src/assets/DF/03.png" ), 16, tilesheetReadyCheck );
 var SSGrounds = new Spritesheet( createSource.img( "src/assets/grounds.png" ), 16, tilesheetReadyCheck );
@@ -226,7 +226,7 @@ SSFloors.addTile("atlas-sand", new Vector(3,0));
 SSFloors.addTile("atlas-wood-path", new Vector(6,0));
 SSFloors.addTile("atlas-water", new Vector(9,0));
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/entitysprite/entitysprite.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/entitysprite/entitysprite.js */
 class EntitySprite extends PrerenderableSprite{
 	constructor(entity){
 		super( true );
@@ -246,17 +246,26 @@ class EntitySprite extends PrerenderableSprite{
 
 		// Tweak the sprite's pixel location by this much
         this.spriteShift = new Vector(0,0);
-		this.lastDrawRegion = new PlanarRangeVector(0,0,0,0);
+		this.lastDrawRegion = new Rectangle(0,0,0,0);
 		
 		this.placeholderCanvas = document.createElement("canvas");
 		this.placeholderCtx = this.placeholderCanvas.getContext("2d");
 
 		this.placeholderCanvas.width = 10;
 		this.placeholderCanvas.height = 10;
+
+		this.thought = null;
     }
     
     get getDrawRegion(){
-        return new PlanarRangeVector( ...TSINTERFACE.VCTSH.convertGPtoSP(this.entity.globalPixelPosition.add( TSINTERFACE.viewContext.pixelOffset ).add(this.spriteShift).add(this.entity.globalPixelPosition)).values, ...this.spriteSize.scale( TSINTERFACE.VCTSH.coefficient ).values );
+		this.entity.boundRegion = new Rectangle(
+			...TSINTERFACE.VCTSH.convertGPtoSP(
+				this.entity.globalPixelPosition
+					.add( TSINTERFACE.viewContext.pixelOffset )
+					.add(this.spriteShift)
+					.add(this.entity.globalPixelPosition)).values,
+			...this.spriteSize.scale( TSINTERFACE.VCTSH.coefficient ).values );
+		return this.entity.boundRegion;
     }
 
 	t3_drawRoutine(){
@@ -311,7 +320,7 @@ class EntityJob{
 	}
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/entitysprite/person.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/entitysprite/person.js */
 class EntitySpritePerson extends EntitySprite{
 	constructor( entity ){
 		super( entity );
@@ -321,12 +330,32 @@ class EntitySpritePerson extends EntitySprite{
 		this.shadowKey = this.source.getSpriteAt( 0,8 );
 		//this.spriteKey = new Vector();
 		this.spriteSize = new Vector( 4, 16 );
-    }
+		this.debugColor = "#000";
+	}
+
+	static get actionColorMap(){
+		return {
+			"walk":"#FFF",
+			"idle":"#000",
+			"pathfinding":"#0FF"
+		};
+	}
+	
+	get actionColor(){
+		return EntitySpritePerson.actionColorMap[this.entity.actionName];
+	}
     
     get getDrawRegion(){
-        return new PlanarRangeVector(
-            ...this.wPixelCoordVect.add(this.entity.attributes.pixelLocation).add(this.shadowOffset.scale( TSINTERFACE.VCTSH.coefficient )).values,
-            ...this.spriteSize.add(this.shadowSpriteSize.add(this.shadowOffset)).subtract(new Vector(0,16)).scale( TSINTERFACE.VCTSH.coefficient ).values );
+		this.entity.boundRegion = new Rectangle(
+			...this.wPixelCoordVect
+				.add( this.entity.attributes.pixelLocation )
+				.add( this.shadowOffset.scale( TSINTERFACE.VCTSH.coefficient ))
+				.values,
+			...this.spriteSize
+				.add( this.shadowSpriteSize.add( this.shadowOffset ))
+				.subtract( TSINTERFACE.placeholders.personShadowBoundModifier )
+				.scale( TSINTERFACE.VCTSH.coefficient ).values );
+        return this.entity.boundRegion;
     }
 
 	t3_draw_shadow( pCoordVect ){
@@ -375,7 +404,7 @@ class EntitySpritePerson extends EntitySprite{
 	}
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/tilesprite.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/tilesprite.js */
 /**
  * Simple tiles
  */
@@ -532,7 +561,7 @@ class TileSprite extends PrerenderableSprite{
 	}
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/nonsolid.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/nonsolid.js */
 class TileSpriteNonSolid extends TileSprite{
 	constructor( ...args ){
 		super(...args);
@@ -554,7 +583,7 @@ class TileSpriteNonSolid extends TileSprite{
 	}
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/bush.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/bush.js */
 class TileSpriteBush extends TileSprite{
     constructor( tile ){
         super( tile );
@@ -585,7 +614,7 @@ class TileSpriteBush extends TileSprite{
     }
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/grass.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/grass.js */
 class TileSpriteGrass extends TileSprite{
 	constructor( tile ){
         super( tile );
@@ -627,7 +656,7 @@ class TileSpriteGrass extends TileSprite{
 }
 
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/neighbourdependent.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/neighbourdependent.js */
 class TileSpriteNeighbourDependent extends TileSprite{
     constructor( tile, source, atlasKey = new Vector(0,0) ){
         super( tile );
@@ -717,7 +746,7 @@ class TileSpriteNeighbourDependent extends TileSprite{
     }
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/metaneighdep.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/metaneighdep.js */
 class TileSpriteMetaNeighbourDependent extends TileSpriteNeighbourDependent{
     constructor( tile, source, atlasKey = new Vector(0,0) ){
         super( tile, source, atlasKey );
@@ -740,7 +769,7 @@ class TileSpriteMetaNeighbourDependent extends TileSpriteNeighbourDependent{
     }
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/wall.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/wall.js */
 
 
 class TileSpriteWall extends TileSpriteNeighbourDependent{
@@ -793,7 +822,7 @@ class TileSpriteWall extends TileSpriteNeighbourDependent{
 }
 
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/sand.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/sand.js */
 class TileSpriteSand extends TileSpriteNeighbourDependent{
     constructor( tile, source, atlasKey ){
         super( tile, source, atlasKey );
@@ -804,7 +833,7 @@ class TileSpriteSand extends TileSpriteNeighbourDependent{
     }
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/water.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/water.js */
 class TileSpriteWater extends TileSpriteNeighbourDependent{
     constructor( tile, source, atlasKey ){
         super( tile, source, atlasKey );
@@ -812,7 +841,7 @@ class TileSpriteWater extends TileSpriteNeighbourDependent{
     }
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/stockpile.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/stockpile.js */
 class TileSpriteStockpile extends TileSpriteNeighbourDependent{
     constructor( tile ){
         super( tile );

@@ -224,7 +224,7 @@ class World{
 	 * @param {*} globalZ 
 	 */
 	isObstacle( globalX, globalY, globalZ ){
-
+		return this.getTile( globalX, globalY ).isObstacle;
 	}
 
 	/**
@@ -248,6 +248,7 @@ class World{
 	 * Get the tile at (globalX, globalY)
 	 * @param {*} globalX 
 	 * @param {*} globalY 
+	 * @returns Tile
 	 */
 	getTile( globalX, globalY ){
 		// Find out which chunk
@@ -380,7 +381,7 @@ class World{
 		// generate stone
 		var elevation = this.generation.getElevationAt(coords.x, coords.y)
 		if( elevation >= cfg.generation_stone_threshold){
-			var n = Math.floor(elevation*10);
+			var n = Math.floor(elevation*cfg.generation_steepness_factor);
 			if( n % 2 == 0 ){
 				chunk.t3_placeTile(TSINTERFACE.tiles.stone, tileX,tileY);
 			}else{
@@ -419,7 +420,7 @@ class World{
 					forceStop = true;
 				}
 				TSINTERFACE.safety.heapWatch();
-			}, 100);
+			}, (Math.floor( self.mapLength/2 )+cx+Math.floor( self.mapLength/2 )+cy*self.mapLength)*100);
 			
 		});
 	}
@@ -687,7 +688,7 @@ class Inventory{
     }
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/game/gui/cursorinteractioncontext.js */
+/* File source: ../src/Ambitious_Dwarf///src/gui/cursorinteractioncontext.js */
 // TODO integrate
 
 class CursorInteractionContext {
@@ -743,7 +744,7 @@ class CursorInteractionContext {
 
 	createListener( eventName ){
 		var self = this;
-		self.element[eventName] = (event) => { self.emit(eventName, event) };
+		self.element[eventName] = (event) => { self.emit(eventName, event); };
 	}
 
 	/**
@@ -753,12 +754,15 @@ class CursorInteractionContext {
 	 */
 	addHandler(eventName, handler) {
 		var self = this;
+		// Hangs onto the event
 		if(!self.handlers[eventName]){
 			self.handlers[eventName]=[
 				(n, event)=>{ self.events[eventName]=event; }
 			];
 			self.createListener( eventName );
 		}
+
+		// Adds handler to routine
 		self.handlers[eventName].push(handler);
 	}
 }
@@ -766,7 +770,7 @@ class CursorInteractionContext {
 
 
 
-/* File source: ../src/Ambitious_Dwarf///src/game/gui/mouseupdate.js */
+/* File source: ../src/Ambitious_Dwarf///src/gui/mouseupdate.js */
 
 
 
@@ -889,7 +893,62 @@ function initializeMouseRoutine() {
 
 */
 
-/* File source: ../src/Ambitious_Dwarf///src/game/gui/mousehandlers.js */
+/* File source: ../src/Ambitious_Dwarf///src/gui/mousehandlers.js */
+var cursorBox = {
+    show: false,
+    start: new Vector(0,0),
+    end: new Vector(0,0),
+    color: "red"
+}
+
+var cursorModes = {
+    default:{
+        onClick:( self, event )=>{
+            cursorBox.start = new Vector( event.clientX, event.clientY );
+            cursorBox.end = new Vector( event.clientX, event.clientY );
+            cursorBox.show = true;
+        },
+        onHold:( self, event )=>{
+            if(!cursorBox.show) return;
+            cursorBox.end = new Vector( event.clientX, event.clientY );
+        },
+        onRelease:( self, event )=>{
+            cursorBox.show = false;
+        }
+    },
+    placeBlock:{
+        onClick:( self, event )=>{
+            self.tilePlaceFunction( ...self.tile.values );
+        },
+        onHold:( self, event )=>{
+            if( self.events.onmousedown.button == 0 ){
+                if( Object.className(TSINTERFACE.World.getTile( ...self.tile.values )) != "WallTile" ){
+                    self.tilePlaceFunction( ...self.tile.values );
+                    self.viewContext.frameNeedsUpdate = true;
+                }
+            }
+        },
+        onRelease:( self, event )=>{
+
+        }
+    }
+}
+
+var cursorMode = "default";
+
+function escCursorMode(){
+    cursorMode = "default";
+    TSINTERFACE.tooltip.hide();
+    TSINTERFACE.tooltip.reset();
+    TSINTERFACE.tooltip.forceShow = false;
+}
+
+document.body.addEventListener('contextmenu', function(ev) { 
+    ev.preventDefault();
+    //menu.popup(ev.x, ev.y);
+    return false;
+  });
+
 /**
  * Gets the location of the tile which the mouse is hovering on the element
  * ! Requires bound RegionRenderContext
@@ -938,14 +997,10 @@ function handle_globalHover(self, event){
     self.lastMousePosition = new Vector( event.clientX, event.clientY );
 }
 
-function handle_placeBlock( self, event ){
+function handle_mouseDrag( self, event ){
     if(!TSINTERFACE.World) return;
-
-    if( self.mousedown && self.events.onmousedown.button == 0 ){
-        if( Object.className(TSINTERFACE.World.getTile( ...self.tile.values )) != "WallTile" ){
-            self.tilePlaceFunction( ...self.tile.values );
-            self.viewContext.frameNeedsUpdate = true;
-        }
+    if( self.mousedown ){
+        cursorModes[cursorMode].onHold( self, event );
     }
 }
 
@@ -964,20 +1019,28 @@ function handle_moveMap( self, event ){
 
 function handle_elementMousedown( self, event ){
     if(!TSINTERFACE.World) return;
+    
     TSINTERFACE.viewContext.requestRedraw();
     
     self.mousedown = true;
     var objAtLocation = TSINTERFACE.World.getTile( ...self.tile.values );
-    if( event.button==0 ){
-        self.tilePlaceFunction( ...self.tile.values );
+    switch(event.button){
+        case 0:
+            cursorModes[cursorMode].onClick( self, event );
+            break;
+        case 2:
+            moveEntities(self.tile);
+            break;
     }
     self.lastClickPosition.assign( [event.clientX, event.clientY] );
     self.viewContext.frameNeedsUpdate = true;
+    
 }
 
 function handle_elementMouseup( self, event ){
     
     TSINTERFACE.viewContext.requestRedraw();
+    cursorModes[cursorMode].onRelease( self, event );
     self.mousedown = false;
 }
 
@@ -989,6 +1052,14 @@ function handle_debugScrollIncriment( self, event ){
     
     document.title = self.viewContext.tileScaleHelper.scale;
     self.viewContext.frameNeedsUpdate = true;
+}
+
+function moveEntities( to ){
+    TSINTERFACE.World.entities.map( (e)=>{
+        if(!TSINTERFACE.World.isObstacle(...to.values)){
+            e.task_move( ...to.values );
+        }
+    });
 }
 
 /* File source: ../src/Ambitious_Dwarf///src/game/item/item.js */
@@ -1106,6 +1177,13 @@ class ResourceItemOre extends ResourceItem{
 		super( ...args );
 		this.addIdentity("ore");
 	}
+}
+
+/**
+ * ItemDrops are representations of items that get displayed on screen
+ */
+class ItemDrop{
+
 }
 
 /* File source: ../src/Ambitious_Dwarf///src/game/item/items.js */
@@ -1271,8 +1349,17 @@ class PathfindingAI{
      * @param {CoordinateVector} startingPosition 
      * @param {CoordinateVector} destination 
      * @returns Promise
+     * @example
+     * startPathFinding( [...] ).then( success( destinationNode ), faul( errorMessage ) );
      */
     startPathfinding( startingPosition, destination ){
+        return this.findNewPath(startingPosition, destination);
+    }
+
+    /**
+     * Ditch the current path to find a new one
+     */
+    findNewPath( startingPosition, destination ){
         this.clearWorkingData();
         var self = this;
         this.destination = destination;
@@ -1281,9 +1368,13 @@ class PathfindingAI{
         this.promise = new Promise( ( resolve, reject )=>{ self.pathfindingPromiseHandler( self, resolve, reject ); } );
         this.time = {start: new Date().getTime()};
         return this.promise;
-        /*
-            startPathFinding( [...] ).then( success( destinationNode ), faul( errorMessage ) );
-         */
+    }
+
+    /**
+     * Start pathfinding by branching out from the current path
+     */
+    branchFromCurrentPath(){
+
     }
 
     /**
@@ -1503,6 +1594,8 @@ class Entity extends Actor{
 
 		// Top it all off
 		this.setupEvents();
+
+		this.show = true;
 	}
 
 	/**
@@ -1558,6 +1651,7 @@ class Entity extends Actor{
 
 	
 
+	
 
 	/**
 	 * Actions are carried out every update tick ( 20 times per second );
@@ -1747,17 +1841,26 @@ class EntityLiving extends Entity{
 	 * @param {Number} y Global Tile Coordinate
 	 */
 	task_move( x, y ){
+		if(this.actionName=="walk"){
+			this.eventEmitter.once( "stepTaken", ()=>{ this.findPathAndStartWalking( x, y ) } );
+			return;
+		}else{
+			this.findPathAndStartWalking( x, y );
+		}	
+	}
+	
+	findPathAndStartWalking( x, y ){
 		var self = this;
+		self.switchAction("pathfinding");
 		self.eventEmitter.emit( "moveStart", self, x, y );
 		this.pathfindingPromise = this.pathfindingAI.startPathfinding( this.globalTilePosition, new Vector( x, y ) );
 		self.eventEmitter.emit( "pathfindingStart", self, self.pathfindingPromise );
-
 		// Pathfinding promise handler
 		this.pathfindingPromise.then( ( pathfindingNodeAtDestination )=>{
 			self.eventEmitter.emit( "pathfindingPathFound", self, pathfindingNodeAtDestination );
 			// Expand the path into an array
 			self.pathfindingAI.expandPath( pathfindingNodeAtDestination );
-			self.nextGlobalTilePosition = self.pathfindingAI.path.pop()
+			self.nextGlobalTilePosition = self.pathfindingAI.path.pop();
 			this.tilePositionDiff = this.globalTilePosition.subtract( this.nextGlobalTilePosition ).scale(-1);
 			// Start walking!
 			self.eventEmitter.emit( "actionStartWalking", self );
@@ -1769,7 +1872,7 @@ class EntityLiving extends Entity{
 			// Handle pathfinding errors here
 		});
 		//this.moveTo( x, y );
-    }
+	}
     
     action_idle(){
 		if( this.idleTimer!=0 ){
@@ -1804,10 +1907,11 @@ class EntityLiving extends Entity{
 			this.walkStartTick = this.tick; // Reset for delta tick [11/6/18]
 			
 
-			
-
+			this.eventEmitter.emit("stepTaken", this);
+			if(!this.nextGlobalTilePosition) return;
 			this.moveTo( ...this.nextGlobalTilePosition.values );
-			this.nextGlobalTilePosition = this.pathfindingAI.path.pop()
+			this.nextGlobalTilePosition = this.pathfindingAI.path.pop();
+			if(!this.nextGlobalTilePosition) return;
 			this.tilePositionDiff = this.globalTilePosition.subtract( this.nextGlobalTilePosition ).scale(-1);
 			// Find new path if current one is blocked by obstacle [11/6/18]
 			if( !EntityLiving.pathfindingDetectObsticle( TSINTERFACE.World.getTile( ...this.nextGlobalTilePosition.values ) ) ){
@@ -1966,6 +2070,10 @@ class Tile extends Actor{
 
 		// Top it all off
 		this.setupEvents();
+	}
+
+	toString(){
+		return this.name;
 	}
 
 	get name(){ return "tile"; }
