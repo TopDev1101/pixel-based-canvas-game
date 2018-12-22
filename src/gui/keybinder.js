@@ -1,3 +1,29 @@
+const EF = ()=>{};
+
+class KeybinderAction{
+    constructor( actionID, keybinderParent ){
+        this.keybinder = keybinderParent;
+        this.id = actionID;
+
+        // Not yet implemented
+        this.whenPressed = EF;
+        this.whenHeld = EF;
+        this.whenReleased = EF;
+    }
+
+    onPressed( callback ){
+        this.keybinder.actionPressed[this.id] = { pressStart: new Date().getTime(), callback: callback };
+    }
+
+    onHeld( callback ){
+        this.keybinder.actionHeld[this.id] = { pressStart: new Date().getTime(), callback: callback };
+    }
+
+    onReleased( callback ){
+        this.keybinder.actionRelease[this.id] = { pressStart: new Date().getTime(), callback: callback };
+    }
+}
+
 class Keybinder{
     /**
      * 
@@ -10,6 +36,7 @@ class Keybinder{
         this.actionHeld = {};
         this.actionRelease = {}
         this.actionHeldDelay = 100; //ms
+        this.actions = {};
         this.keybinds = {};
 
         this.logBindCodeToConsole = false;
@@ -65,11 +92,12 @@ class Keybinder{
         this.actionLock[action] = false;
     }
 
-    createAction( actionID, pressed, held=()=>{}, release=()=>{} ){
+    createAction( actionID, pressed=EF, held=EF, release=EF ){
         this.actionLock[actionID] = false;
         this.actionPressed[actionID] = { pressStart: new Date().getTime(), callback: pressed };
         this.actionHeld[actionID] = { pressStart: new Date().getTime(), callback: held };
         this.actionRelease[actionID] = { pressStart: new Date().getTime(), callback: release };
+        return new KeybinderAction( actionID, this );
     }
 
     bindAction( actionID, bindCode, callback ){

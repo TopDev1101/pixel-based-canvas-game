@@ -1,3 +1,58 @@
+var cursorBox = {
+    show: false,
+    start: new Vector(0,0),
+    end: new Vector(0,0),
+    color: "red"
+}
+
+var cursorModes = {
+    default:{
+        onClick:( self, event )=>{
+            cursorBox.start = new Vector( event.clientX, event.clientY );
+            cursorBox.end = new Vector( event.clientX, event.clientY );
+            cursorBox.show = true;
+        },
+        onHold:( self, event )=>{
+            if(!cursorBox.show) return;
+            cursorBox.end = new Vector( event.clientX, event.clientY );
+        },
+        onRelease:( self, event )=>{
+            cursorBox.show = false;
+        }
+    },
+    placeBlock:{
+        onClick:( self, event )=>{
+            self.tilePlaceFunction( ...self.tile.values );
+        },
+        onHold:( self, event )=>{
+            if( self.events.onmousedown.button == 0 ){
+                if( Object.className(TSINTERFACE.World.getTile( ...self.tile.values )) != "WallTile" ){
+                    self.tilePlaceFunction( ...self.tile.values );
+                    self.viewContext.frameNeedsUpdate = true;
+                }
+            }
+        },
+        onRelease:( self, event )=>{
+
+        }
+    }
+}
+
+var cursorMode = "default";
+
+function escCursorMode(){
+    cursorMode = "default";
+    TSINTERFACE.tooltip.hide();
+    TSINTERFACE.tooltip.reset();
+    TSINTERFACE.tooltip.forceShow = false;
+}
+
+document.body.addEventListener('contextmenu', function(ev) { 
+    ev.preventDefault();
+    //menu.popup(ev.x, ev.y);
+    return false;
+  });
+
 /**
  * Gets the location of the tile which the mouse is hovering on the element
  * ! Requires bound RegionRenderContext
@@ -46,14 +101,10 @@ function handle_globalHover(self, event){
     self.lastMousePosition = new Vector( event.clientX, event.clientY );
 }
 
-function handle_placeBlock( self, event ){
+function handle_mouseDrag( self, event ){
     if(!TSINTERFACE.World) return;
-
-    if( self.mousedown && self.events.onmousedown.button == 0 ){
-        if( Object.className(TSINTERFACE.World.getTile( ...self.tile.values )) != "WallTile" ){
-            self.tilePlaceFunction( ...self.tile.values );
-            self.viewContext.frameNeedsUpdate = true;
-        }
+    if( self.mousedown ){
+        cursorModes[cursorMode].onHold( self, event );
     }
 }
 
@@ -72,20 +123,28 @@ function handle_moveMap( self, event ){
 
 function handle_elementMousedown( self, event ){
     if(!TSINTERFACE.World) return;
+    
     TSINTERFACE.viewContext.requestRedraw();
     
     self.mousedown = true;
     var objAtLocation = TSINTERFACE.World.getTile( ...self.tile.values );
-    if( event.button==0 ){
-        self.tilePlaceFunction( ...self.tile.values );
+    switch(event.button){
+        case 0:
+            cursorModes[cursorMode].onClick( self, event );
+            break;
+        case 2:
+            moveEntities(self.tile);
+            break;
     }
     self.lastClickPosition.assign( [event.clientX, event.clientY] );
     self.viewContext.frameNeedsUpdate = true;
+    
 }
 
 function handle_elementMouseup( self, event ){
     
     TSINTERFACE.viewContext.requestRedraw();
+    cursorModes[cursorMode].onRelease( self, event );
     self.mousedown = false;
 }
 
@@ -97,4 +156,12 @@ function handle_debugScrollIncriment( self, event ){
     
     document.title = self.viewContext.tileScaleHelper.scale;
     self.viewContext.frameNeedsUpdate = true;
+}
+
+function moveEntities( to ){
+    TSINTERFACE.World.entities.map( (e)=>{
+        if(!TSINTERFACE.World.isObstacle(...to.values)){
+            e.task_move( ...to.values );
+        }
+    });
 }

@@ -70,6 +70,7 @@ class GUIToolTip{
     }
 
     hide(){
+        if(this.forceShow) return;
         this.element.classList.add("tooltip-inactive");
         this.shown = false;
     }

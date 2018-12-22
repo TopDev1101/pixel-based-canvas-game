@@ -1,8 +1,11 @@
 class LoadingScreen{
     constructor(){
+        this.backdrop = document.createElement("div");
+        this.backdrop.classList.add("loading-screen-backdrop");
         this.element = document.createElement("div");
         this.element.classList.add("loading-screen");
-        document.body.appendChild(this.element);
+        this.backdrop.appendChild(this.element);
+        document.body.appendChild(this.backdrop);
     }
 
     // Progress bar container identity parts lol.
@@ -49,11 +52,11 @@ class LoadingScreen{
     }
 
     show(){
-        this.element.classList.add("loading-screen-active");
+        this.backdrop.classList.add("loading-screen-active");
     }
 
     hide(){
-        this.element.classList.remove("loading-screen-active");
+        this.backdrop.classList.remove("loading-screen-active");
     }
 }
 
