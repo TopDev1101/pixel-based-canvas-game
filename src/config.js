@@ -30,11 +30,12 @@ cfg.debug_chunk_load_mode = "sync" || "async";
 cfg.debug_seed_default = "debug";
 cfg.debug_enable_newChunkRenders = true;
 
+cfg.renderer = "t3" || "t4" || "threejs";
 
 // World stuff
 cfg.world_chunkSize = 64; // The size of each chunk, in tiles
 cfg.world_treePlacementModifier = 0.05; // The chance that a tree will be placed
-cfg.world_map_size_debug = 5;
+cfg.world_map_size_debug = 2; // 64^2 * 5^2 best results
 cfg.world_map_size_normal = 3;
 cfg.world_map_size_double = 5;
 cfg.world_map_size_large = 6;
@@ -88,11 +89,12 @@ cfg.update_interval_triple = 1000/cfg.update_tps_triple;
 cfg.testing_entity_amount = 10;
 cfg.eventlog_entity_size = 0;
 
-cfg.generation_elevationCoefficient_x = 1/75;
-cfg.generation_elevationCoefficient_y = 1/75;
+cfg.generation_elevationCoefficient_x = 1/300;
+cfg.generation_elevationCoefficient_y = 1/300;
 cfg.generation_stone_threshold = 0.35;
-cfg.generation_stone_x_coefficient = 1/75;
-cfg.generation_stone_y_coefficient = 1/75;
+cfg.generation_stone_x_coefficient = 1/300;
+cfg.generation_stone_y_coefficient = 1/300;
+cfg.generation_steepness_factor = 50 || 1;
 
 cfg.t3_routineEnable_viewRangeUpdate = true;
 cfg.t3_routineEnable_drawChunk = true;

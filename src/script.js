@@ -52,7 +52,7 @@ function onWorldChunksDoneRendering(){
 function setupMouseHandlers( globalCursorEnv, cursorEnv ){
 	cursorEnv.addHandler("onmousemove", handle_elementHover);
 	globalCursorEnv.addHandler("onmousemove", handle_globalHover);
-	cursorEnv.addHandler("onmousemove", handle_placeBlock);
+	cursorEnv.addHandler("onmousemove", handle_mouseDrag);
 	cursorEnv.addHandler("onmousemove", handle_moveMap);
 	cursorEnv.addHandler("onmousedown", handle_elementMousedown);
 	cursorEnv.addHandler("onmouseup", handle_elementMouseup);

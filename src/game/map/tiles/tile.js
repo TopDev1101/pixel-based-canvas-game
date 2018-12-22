@@ -44,6 +44,10 @@ class Tile extends Actor{
 		this.setupEvents();
 	}
 
+	toString(){
+		return this.name;
+	}
+
 	get name(){ return "tile"; }
 
 	////////////

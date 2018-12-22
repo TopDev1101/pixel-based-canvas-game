@@ -195,7 +195,7 @@ class World{
 	 * @param {*} globalZ 
 	 */
 	isObstacle( globalX, globalY, globalZ ){
-
+		return this.getTile( globalX, globalY ).isObstacle;
 	}
 
 	/**
@@ -219,6 +219,7 @@ class World{
 	 * Get the tile at (globalX, globalY)
 	 * @param {*} globalX 
 	 * @param {*} globalY 
+	 * @returns Tile
 	 */
 	getTile( globalX, globalY ){
 		// Find out which chunk
@@ -351,7 +352,7 @@ class World{
 		// generate stone
 		var elevation = this.generation.getElevationAt(coords.x, coords.y)
 		if( elevation >= cfg.generation_stone_threshold){
-			var n = Math.floor(elevation*10);
+			var n = Math.floor(elevation*cfg.generation_steepness_factor);
 			if( n % 2 == 0 ){
 				chunk.t3_placeTile(TSINTERFACE.tiles.stone, tileX,tileY);
 			}else{
@@ -390,7 +391,7 @@ class World{
 					forceStop = true;
 				}
 				TSINTERFACE.safety.heapWatch();
-			}, 100);
+			}, (Math.floor( self.mapLength/2 )+cx+Math.floor( self.mapLength/2 )+cy*self.mapLength)*100);
 			
 		});
 	}

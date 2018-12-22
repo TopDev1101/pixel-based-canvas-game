@@ -53,7 +53,7 @@ class CursorInteractionContext {
 
 	createListener( eventName ){
 		var self = this;
-		self.element[eventName] = (event) => { self.emit(eventName, event) };
+		self.element[eventName] = (event) => { self.emit(eventName, event); };
 	}
 
 	/**
@@ -63,12 +63,15 @@ class CursorInteractionContext {
 	 */
 	addHandler(eventName, handler) {
 		var self = this;
+		// Hangs onto the event
 		if(!self.handlers[eventName]){
 			self.handlers[eventName]=[
 				(n, event)=>{ self.events[eventName]=event; }
 			];
 			self.createListener( eventName );
 		}
+
+		// Adds handler to routine
 		self.handlers[eventName].push(handler);
 	}
 }

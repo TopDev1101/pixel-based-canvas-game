@@ -1,5 +1,5 @@
 const FS = require("fs");
-
+var LDIV = document.getElementById("log");
 /**
  * This section is for global access
  */
@@ -27,7 +27,8 @@ Townsend = {
 	},
 	placeholders:{
 		empty2dVector: new Vector( 0,0 ),
-		chunkExtendVector: new PlanarRangeVector( 0, 0, 1, 1 )
+		chunkExtendVector: new Rectangle( 0, 0, 1, 1 ),
+		personShadowBoundModifier: new Vector(0,16)
 	},
 	progressBarUpdaters:{
 
@@ -42,8 +43,8 @@ Townsend = {
 			return a.rss + a.heapUsed;
 		},
 		heapWatch:()=>{
-			var a = process.memoryUsage();
-			b = a.rss + a.heapUsed;
+			var a = process.memoryUsage(),
+				b = a.rss + a.heapUsed;
 			if(b/1024/1024>cfg.memory_max){
 				alert(`[TSINTERFACE.safety] "Memory cap reached! Terminating."\n [${Math.floor(b/1024/1024)}/${cfg.memory_max}] mb `);
 				process.exit();

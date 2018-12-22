@@ -47,7 +47,17 @@ Object.values( TSINTERFACE.buildableTiles ).map( (tile)=>{
     tile.sprite.draw_icon( iconCtx );
     // Use that canvas as an icon
     var button = new GUIMenuItem( iconCanvas, tile.name );
-    button.on_activate = ()=>{ TSINTERFACE.VCCUR.tilePlaceFunction = placeFunction; };
+
+    // Setup activation routine
+    button.on_activate = ()=>{
+        cursorMode = "placeBlock";
+        escaper.addToStack( escCursorMode );
+        TSINTERFACE.tooltip.reset();
+        TSINTERFACE.tooltip.updateLabel( `Place ${tile.name}` );
+        TSINTERFACE.tooltip.show();
+        TSINTERFACE.tooltip.forceShow = true;
+        TSINTERFACE.VCCUR.tilePlaceFunction = placeFunction;
+    };
 
     if( tile.isDebug ){
         TSINTERFACE.GUI.containers.smbcDebugTileSelectGrid.addMenuItem( button );

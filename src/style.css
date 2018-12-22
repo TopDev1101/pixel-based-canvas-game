@@ -11,7 +11,7 @@ img{
 	-webkit-user-drag: none;
 }
 
-.loading-screen{
+.loading-screen-backdrop{
 	position: absolute;
 	top:0px;
 	bottom:0px;
@@ -23,13 +23,21 @@ img{
 	padding:2%;
 }
 
-.loading-screen .comment{
+.loading-screen-backdrop .comment{
 	font-size: 18px;
 	font-color: darkgrey;
 }
 
 .loading-screen-active{
 	display: block;
+}
+
+.loading-screen{
+	position: absolute;
+	width: 500px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .progress-container{
