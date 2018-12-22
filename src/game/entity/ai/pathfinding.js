@@ -146,8 +146,17 @@ class PathfindingAI{
      * @param {CoordinateVector} startingPosition 
      * @param {CoordinateVector} destination 
      * @returns Promise
+     * @example
+     * startPathFinding( [...] ).then( success( destinationNode ), faul( errorMessage ) );
      */
     startPathfinding( startingPosition, destination ){
+        return this.findNewPath(startingPosition, destination);
+    }
+
+    /**
+     * Ditch the current path to find a new one
+     */
+    findNewPath( startingPosition, destination ){
         this.clearWorkingData();
         var self = this;
         this.destination = destination;
@@ -156,9 +165,13 @@ class PathfindingAI{
         this.promise = new Promise( ( resolve, reject )=>{ self.pathfindingPromiseHandler( self, resolve, reject ); } );
         this.time = {start: new Date().getTime()};
         return this.promise;
-        /*
-            startPathFinding( [...] ).then( success( destinationNode ), faul( errorMessage ) );
-         */
+    }
+
+    /**
+     * Start pathfinding by branching out from the current path
+     */
+    branchFromCurrentPath(){
+
     }
 
     /**

@@ -36,6 +36,8 @@ class Entity extends Actor{
 
 		// Top it all off
 		this.setupEvents();
+
+		this.show = true;
 	}
 
 	/**
@@ -91,6 +93,7 @@ class Entity extends Actor{
 
 	
 
+	
 
 	/**
 	 * Actions are carried out every update tick ( 20 times per second );
