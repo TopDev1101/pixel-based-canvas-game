@@ -12,10 +12,10 @@ class CoordinateVector extends Vector{
 /**
  * Defines a region
  */
-class PlanarRangeVector extends Vector{
+class Rectangle extends Vector{
 	constructor(...args){
         super(...args);
-        this.variation = PlanarRangeVector;
+        this.variation = Rectangle;
     }
     
     get width(){
@@ -41,7 +41,7 @@ class PlanarRangeVector extends Vector{
 
 /* File source: ../src/Ambitious_Dwarf///src/initmethods.js */
 const FS = require("fs");
-
+var LDIV = document.getElementById("log");
 /**
  * This section is for global access
  */
@@ -69,7 +69,11 @@ Townsend = {
 	},
 	placeholders:{
 		empty2dVector: new Vector( 0,0 ),
-		chunkExtendVector: new PlanarRangeVector( 0, 0, 1, 1 )
+		chunkExtendVector: new Rectangle( 0, 0, 1, 1 ),
+		personShadowBoundModifier: new Vector(0,16)
+	},
+	progressBarUpdaters:{
+
 	},
 	eventEmitter: new SimpleEventEmitter(100),
 	GUI:{
@@ -81,10 +85,10 @@ Townsend = {
 			return a.rss + a.heapUsed;
 		},
 		heapWatch:()=>{
-			var a = process.memoryUsage();
-			b = a.rss + a.heapUsed;
+			var a = process.memoryUsage(),
+				b = a.rss + a.heapUsed;
 			if(b/1024/1024>cfg.memory_max){
-				alert(`[Townsend.safety] "Memory cap reached! Terminating."\n [${Math.floor(b/1024/1024)}/${cfg.memory_max}] mb `);
+				alert(`[TSINTERFACE.safety] "Memory cap reached! Terminating."\n [${Math.floor(b/1024/1024)}/${cfg.memory_max}] mb `);
 				process.exit();
 			}
 			return b;
@@ -92,30 +96,32 @@ Townsend = {
 	}
 };
 
+var TSINTERFACE = Townsend;
+
 // Translate labled neighbours to iterable array
-Townsend.neighbourOffsetVectorList = Object.values( Townsend.neighbourOffsetVectors );
-Townsend.neighbourDiagonalOffsetVectorList = Object.values( Townsend.neighbourDiagonalOffsetVectors );
-Townsend.neighbourMergedOffsetVectorList = Object.values( Townsend.neighbourOffsetVectors );
-Townsend.neighbourMergedOffsetVectorList.push( ...Object.values( Townsend.neighbourDiagonalOffsetVectors ) );
+TSINTERFACE.neighbourOffsetVectorList = Object.values( TSINTERFACE.neighbourOffsetVectors );
+TSINTERFACE.neighbourDiagonalOffsetVectorList = Object.values( TSINTERFACE.neighbourDiagonalOffsetVectors );
+TSINTERFACE.neighbourMergedOffsetVectorList = Object.values( TSINTERFACE.neighbourOffsetVectors );
+TSINTERFACE.neighbourMergedOffsetVectorList.push( ...Object.values( TSINTERFACE.neighbourDiagonalOffsetVectors ) );
 
 /**
  * This section is for native window
  */
 if( nw ){
-	Townsend.Window = nw.Window.get();
-	Townsend.Window.maximize();
+	TSINTERFACE.Window = nw.Window.get();
+	TSINTERFACE.Window.maximize();
 }
 
 /**
  * This section is for making sure all sprite atalases are loaded
  */
-Townsend.tilesheetsReady = 0;
-Townsend.allTilesheetsLoaded = false;
+TSINTERFACE.tilesheetsReady = 0;
+TSINTERFACE.allTilesheetsLoaded = false;
 var tilesheetReadyCheck = function(){
-	Townsend.tilesheetsReady++;
-	Townsend.allTilesheetsLoaded = Object.keys(Townsend.spritesheet).length <= Townsend.tilesheetsReady;
-	console.log(`${Townsend.tilesheetsReady}/${Object.keys(Townsend.spritesheet).length} loaded`)
-	if( Townsend.allTilesheetsLoaded ){
+	TSINTERFACE.tilesheetsReady++;
+	TSINTERFACE.allTilesheetsLoaded = Object.keys(TSINTERFACE.spritesheet).length <= TSINTERFACE.tilesheetsReady;
+	console.log(`${TSINTERFACE.tilesheetsReady}/${Object.keys(TSINTERFACE.spritesheet).length} loaded`)
+	if( TSINTERFACE.allTilesheetsLoaded ){
 		console.log("All spritesheets loaded and ready to go!");
 	}
 }
@@ -143,6 +149,18 @@ class Actor{
         this.uuid = this.gITRID(); // Defined in ^ utils/string.js
         NUMBER_OF_UUIDS++;
         ACTORS.push(this);
+    }
+
+    static getAllWithIdentity( identity ){
+        return ACTORS.filter( (x)=>{return x.hasIdentity(identity);} );
+    }
+
+    static getAllWithCondition( callback ){
+        return ACTORS.filter( callback );
+    }
+
+    static getAllMatches( regex ){
+        return ACTORS.filter( (x)=>{return x.identityString.match(regex);} );
     }
 
     gITRID(){

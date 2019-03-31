@@ -113,3 +113,10 @@ class ResourceItemOre extends ResourceItem{
 		this.addIdentity("ore");
 	}
 }
+
+/**
+ * ItemDrops are representations of items that get displayed on screen
+ */
+class ItemDrop{
+
+}

@@ -11,10 +11,10 @@ class CoordinateVector extends Vector{
 /**
  * Defines a region
  */
-class PlanarRangeVector extends Vector{
+class Rectangle extends Vector{
 	constructor(...args){
         super(...args);
-        this.variation = PlanarRangeVector;
+        this.variation = Rectangle;
     }
     
     get width(){

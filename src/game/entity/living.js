@@ -63,7 +63,7 @@ class AttributeManagerEntityLiving{
 		return this.entity.tilePositionDiff.scale(
 			(this.entity.ticksSinceLastTileTransition) /
 			this.ticksPerTileTransition
-		).scale(Townsend.VCTSH.tileSize);
+		).scale(TSINTERFACE.VCTSH.tileSize);
 	}
     
     get tileTransitionInterval(){
@@ -117,7 +117,7 @@ class EntityLiving extends Entity{
 	 * @param {Function} profile entity profile query Function->boolean
 	 */
 	queryEntities( profile ){
-		return Townsend.World.entities.filter( profile );
+		return TSINTERFACE.World.entities.filter( profile );
 	}
 	
 	resetIdleTimer(){
@@ -139,17 +139,26 @@ class EntityLiving extends Entity{
 	 * @param {Number} y Global Tile Coordinate
 	 */
 	task_move( x, y ){
+		if(this.actionName=="walk"){
+			this.eventEmitter.once( "stepTaken", ()=>{ this.findPathAndStartWalking( x, y ) } );
+			return;
+		}else{
+			this.findPathAndStartWalking( x, y );
+		}	
+	}
+	
+	findPathAndStartWalking( x, y ){
 		var self = this;
+		self.switchAction("pathfinding");
 		self.eventEmitter.emit( "moveStart", self, x, y );
 		this.pathfindingPromise = this.pathfindingAI.startPathfinding( this.globalTilePosition, new Vector( x, y ) );
 		self.eventEmitter.emit( "pathfindingStart", self, self.pathfindingPromise );
-
 		// Pathfinding promise handler
 		this.pathfindingPromise.then( ( pathfindingNodeAtDestination )=>{
 			self.eventEmitter.emit( "pathfindingPathFound", self, pathfindingNodeAtDestination );
 			// Expand the path into an array
 			self.pathfindingAI.expandPath( pathfindingNodeAtDestination );
-			self.nextGlobalTilePosition = self.pathfindingAI.path.pop()
+			self.nextGlobalTilePosition = self.pathfindingAI.path.pop();
 			this.tilePositionDiff = this.globalTilePosition.subtract( this.nextGlobalTilePosition ).scale(-1);
 			// Start walking!
 			self.eventEmitter.emit( "actionStartWalking", self );
@@ -161,7 +170,7 @@ class EntityLiving extends Entity{
 			// Handle pathfinding errors here
 		});
 		//this.moveTo( x, y );
-    }
+	}
     
     action_idle(){
 		if( this.idleTimer!=0 ){
@@ -196,13 +205,14 @@ class EntityLiving extends Entity{
 			this.walkStartTick = this.tick; // Reset for delta tick [11/6/18]
 			
 
-			
-
+			this.eventEmitter.emit("stepTaken", this);
+			if(!this.nextGlobalTilePosition) return;
 			this.moveTo( ...this.nextGlobalTilePosition.values );
-			this.nextGlobalTilePosition = this.pathfindingAI.path.pop()
+			this.nextGlobalTilePosition = this.pathfindingAI.path.pop();
+			if(!this.nextGlobalTilePosition) return;
 			this.tilePositionDiff = this.globalTilePosition.subtract( this.nextGlobalTilePosition ).scale(-1);
 			// Find new path if current one is blocked by obstacle [11/6/18]
-			if( !EntityLiving.pathfindingDetectObsticle( Townsend.World.getTile( ...this.nextGlobalTilePosition.values ) ) ){
+			if( !EntityLiving.pathfindingDetectObsticle( TSINTERFACE.World.getTile( ...this.nextGlobalTilePosition.values ) ) ){
 
 				// Switch the action, handle the event
 				this.tilePositionDiff = new Vector(0,0);

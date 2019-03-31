@@ -12,6 +12,18 @@ class Actor{
         ACTORS.push(this);
     }
 
+    static getAllWithIdentity( identity ){
+        return ACTORS.filter( (x)=>{return x.hasIdentity(identity);} );
+    }
+
+    static getAllWithCondition( callback ){
+        return ACTORS.filter( callback );
+    }
+
+    static getAllMatches( regex ){
+        return ACTORS.filter( (x)=>{return x.identityString.match(regex);} );
+    }
+
     gITRID(){
         var id = ITRIDCTR;
         ITRIDCTR++;

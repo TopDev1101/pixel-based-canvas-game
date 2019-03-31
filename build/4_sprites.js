@@ -1,4 +1,4 @@
-/* File source: ../src/Ambitious_Dwarf///src/sprites/chunkrender.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/chunkrender.js */
 class ChunkRenderer extends Actor{
     constructor( chunk ){
         super("sprite");
@@ -26,7 +26,7 @@ class ChunkRenderer extends Actor{
     t3_drawProtocol(){
         this.drawCalls++;
         if( !cfg.debug_enable_newChunkRenders ) return;
-        if( !this.firstRenderDone && Townsend.allTilesheetsLoaded ){
+        if( !this.firstRenderDone && TSINTERFACE.allTilesheetsLoaded ){
             this.drawFirst();
         }
         this.drawUnrendered();
@@ -45,7 +45,7 @@ class ChunkRenderer extends Actor{
             coordVect.y = y;
             globalTileCoordVect =this.chunk.globalTileOrigin.add( coordVect );
 
-            self.chunk.getObject( x, y ).payload.tile.sprite.t3_drawRoutine( self.chunk, coordVect, globalTileCoordVect );
+            self.chunk.getTile(x,y).sprite.t3_drawRoutine( self.chunk, coordVect, globalTileCoordVect );
         });
         this.firstRenderDone = true;
         this.chunk.world.increaseRenderedChunks();
@@ -84,11 +84,11 @@ class ChunkRenderer extends Actor{
 
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/sprite.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/sprite.js */
 class Sprite extends Actor{
     constructor(){
 		super("sprite");
-        this.source = Townsend.spritesheet.grounds;
+        this.source = TSINTERFACE.spritesheet.grounds;
         this.sources = {};
 
         this.width = cfg.tile_size;
@@ -179,7 +179,7 @@ class PrerenderableSprite extends Sprite{
 	t3_prerender(){}
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/game/render/spritedefs.js */
+/* File source: ../src/Ambitious_Dwarf///src/engine/render_t3/spritedefs.js */
 var SSPlaceholders = new Spritesheet( createSource.img( "src/assets/placeholder-atlas.png" ), 16, tilesheetReadyCheck );
 var SSDFDefault = new Spritesheet( createSource.img( "src/assets/DF/03.png" ), 16, tilesheetReadyCheck );
 var SSGrounds = new Spritesheet( createSource.img( "src/assets/grounds.png" ), 16, tilesheetReadyCheck );
@@ -191,7 +191,7 @@ var SSWalls = new Spritesheet( createSource.img( "src/assets/walls.png" ), 16, t
 var SSDrone = new Spritesheet( createSource.img( "src/assets/drone.png" ), 16, tilesheetReadyCheck );
 var SSLMFAO = new Spritesheet( createSource.img( "src/assets/lmfao/lmfaolux.png" ), 16, tilesheetReadyCheck );
 
-Townsend.spritesheet = {
+TSINTERFACE.spritesheet = {
 	placeholders: SSPlaceholders,
 	DFDefault: SSDFDefault,
 	grounds: SSGrounds,
@@ -226,7 +226,7 @@ SSFloors.addTile("atlas-sand", new Vector(3,0));
 SSFloors.addTile("atlas-wood-path", new Vector(6,0));
 SSFloors.addTile("atlas-water", new Vector(9,0));
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/entitysprite/entitysprite.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/entitysprite/entitysprite.js */
 class EntitySprite extends PrerenderableSprite{
 	constructor(entity){
 		super( true );
@@ -234,7 +234,7 @@ class EntitySprite extends PrerenderableSprite{
 		if(Object.isUndefined( entity )){ throw "Error, tried constructing EntitySprite with no entity linked"; }
 		this.entity = entity;
 
-		this.source = Townsend.spritesheet.placeholders;
+		this.source = TSINTERFACE.spritesheet.placeholders;
 		this.sourceKey = this.source.getSpriteAt( 0, 1 );
 		this.spriteSource = this.source; // Disambiguation 
         this.animationStartTime = new Date().getTime();
@@ -246,21 +246,30 @@ class EntitySprite extends PrerenderableSprite{
 
 		// Tweak the sprite's pixel location by this much
         this.spriteShift = new Vector(0,0);
-		this.lastDrawRegion = new PlanarRangeVector(0,0,0,0);
+		this.lastDrawRegion = new Rectangle(0,0,0,0);
 		
 		this.placeholderCanvas = document.createElement("canvas");
 		this.placeholderCtx = this.placeholderCanvas.getContext("2d");
 
 		this.placeholderCanvas.width = 10;
 		this.placeholderCanvas.height = 10;
+
+		this.thought = null;
     }
     
     get getDrawRegion(){
-        return new PlanarRangeVector( ...Townsend.VCTSH.convertGPtoSP(this.entity.globalPixelPosition.add( Townsend.viewContext.pixelOffset ).add(this.spriteShift).add(this.entity.globalPixelPosition)).values, ...this.spriteSize.scale( Townsend.VCTSH.coefficient ).values );
+		this.entity.boundRegion = new Rectangle(
+			...TSINTERFACE.VCTSH.convertGPtoSP(
+				this.entity.globalPixelPosition
+					.add( TSINTERFACE.viewContext.pixelOffset )
+					.add(this.spriteShift)
+					.add(this.entity.globalPixelPosition)).values,
+			...this.spriteSize.scale( TSINTERFACE.VCTSH.coefficient ).values );
+		return this.entity.boundRegion;
     }
 
 	t3_drawRoutine(){
-		var pCoordVect = this.entity.globalPixelPosition.add( Townsend.viewContext.pixelOffset ).add(this.spriteShift);
+		var pCoordVect = this.entity.globalPixelPosition.add( TSINTERFACE.viewContext.pixelOffset ).add(this.spriteShift);
 		this.wPixelCoordVect = pCoordVect;
 		if( this.needsPrerender && !this.isPrerendered && PrerenderingStats.ready ){
 			this.t3_prerender();
@@ -283,9 +292,9 @@ class EntitySprite extends PrerenderableSprite{
 		canvas.height = region.height || 1;
 		ctx.clearRect(0,0,region.width,region.height);
 		// Fills the placeholder with whatever was behind the entity
-		ctx.drawImage( Townsend.canvases.ground, ...region.values, 0, 0, region.width, region.height );
-		ctx.drawImage( Townsend.canvases.overflow, ...region.values, 0, 0, region.width, region.height );
-		ctx.drawImage( Townsend.canvases.entities, ...region.values, 0, 0, region.width, region.height );
+		ctx.drawImage( TSINTERFACE.canvases.ground, ...region.values, 0, 0, region.width, region.height );
+		ctx.drawImage( TSINTERFACE.canvases.overflow, ...region.values, 0, 0, region.width, region.height );
+		ctx.drawImage( TSINTERFACE.canvases.entities, ...region.values, 0, 0, region.width, region.height );
 		// draws the placeholder before drawing the entity
 	}
 
@@ -311,31 +320,65 @@ class EntityJob{
 	}
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/entitysprite/person.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/entitysprite/person.js */
 class EntitySpritePerson extends EntitySprite{
 	constructor( entity ){
 		super( entity );
-		this.source = Townsend.spritesheet.people1;
+		this.source = TSINTERFACE.spritesheet.people1;
 		this.shadowSpriteSize = new Vector( 8, 16 );
 		this.shadowOffset = new Vector( -3, 2 );
 		this.shadowKey = this.source.getSpriteAt( 0,8 );
 		//this.spriteKey = new Vector();
 		this.spriteSize = new Vector( 4, 16 );
-    }
+		this.debugColor = "#000";
+	}
+
+	static get actionColorMap(){
+		return {
+			"walk":"#FFF",
+			"idle":"#000",
+			"pathfinding":"#0FF"
+		};
+	}
+
+	static vop_2189( sss, so, psbm, co ){
+
+	}
+
+	static vop_2173( vpl, vso, co ){
+		return ( x, i )=>{
+			return x + vpl.values[i] + (vso.values[i] * co);
+		};
+	}
+	
+	get actionColor(){
+		return EntitySpritePerson.actionColorMap[this.entity.actionName];
+	}
     
     get getDrawRegion(){
-        return new PlanarRangeVector(
-            ...this.wPixelCoordVect.add(this.entity.attributes.pixelLocation).add(this.shadowOffset.scale( Townsend.VCTSH.coefficient )).values,
-            ...this.spriteSize.add(this.shadowSpriteSize.add(this.shadowOffset)).subtract(new Vector(0,16)).scale( Townsend.VCTSH.coefficient ).values );
+		this.entity.boundRegion = new Rectangle(
+			...this.wPixelCoordVect
+				.add( this.entity.attributes.pixelLocation )
+				.add( this.shadowOffset.scale( TSINTERFACE.VCTSH.coefficient ))
+				.values,
+			...this.spriteSize
+				.add( this.shadowSpriteSize.add( this.shadowOffset ))
+				.subtract( TSINTERFACE.placeholders.personShadowBoundModifier )
+				.scale( TSINTERFACE.VCTSH.coefficient ).values );
+        return this.entity.boundRegion;
     }
 
 	t3_draw_shadow( pCoordVect ){
+		let pixelLocation = this.entity.attributes.pixelLocation;
+		let shadowOffset = this.shadowOffset;
+		let scaleCoefficient = TSINTERFACE.VCTSH.coefficient;
 		this.source.drawPartialSprite(
-			Townsend.CVSCTX.entities,
+			TSINTERFACE.CVSCTX.entities,
 			this.shadowKey,
 			...this.shadowSpriteSize.values,
-			pCoordVect.add( this.entity.attributes.pixelLocation ).add(this.shadowOffset.scale(Townsend.VCTSH.coefficient)),
-			...this.shadowSpriteSize.scale( Townsend.VCTSH.coefficient ).values
+			pCoordVect.map( EntitySpritePerson.vop_2173(pixelLocation, shadowOffset, scaleCoefficient) ),
+			//pCoordVect.add( this.entity.attributes.pixelLocation ).add(this.shadowOffset.scale(TSINTERFACE.VCTSH.coefficient)),
+			...this.shadowSpriteSize.scale( TSINTERFACE.VCTSH.coefficient ).values
 		);
 	}
 
@@ -351,12 +394,12 @@ class EntitySpritePerson extends EntitySprite{
 		var direction = this.entity.tilePositionDiff.x >= 0 ? 0 : 8;
 		this.t3_draw_shadow( pCoordVect );
 		this.source.drawPartialSprite(
-			Townsend.CVSCTX.entities,
+			TSINTERFACE.CVSCTX.entities,
 			this.source.getTileAt(4+(this.entity.attributes.sex*4), spriteKey + direction ),
 			//this.source.getTileAt( 0, 1 ),
 			...this.spriteSize.values,
 			pCoordVect,
-			...this.spriteSize.scale( Townsend.VCTSH.coefficient ).values
+			...this.spriteSize.scale( TSINTERFACE.VCTSH.coefficient ).values
 		);
 	}
 
@@ -364,23 +407,25 @@ class EntitySpritePerson extends EntitySprite{
 		var spriteKey = Math.floor( this.entity.tick/4 ) % 4;
 		var direction = this.entity.tilePositionDiff.x > 0 ? 0 : 8;
 		this.t3_draw_shadow( pCoordVect );
+		let vectorStart = this.source.getTileAt(4+(this.entity.attributes.sex*4), spriteKey+4  + direction);
+		let viewportOffset = pCoordVect.add( this.entity.attributes.pixelLocation );
 		this.source.drawPartialSprite(
-			Townsend.CVSCTX.entities,
-			this.source.getTileAt(4+(this.entity.attributes.sex*4), spriteKey+4  + direction),
+			TSINTERFACE.CVSCTX.entities,
+			vectorStart,
 			//this.source.getTileAt( 0, 1 ),
-			...this.spriteSize.values,
-			pCoordVect.add( this.entity.attributes.pixelLocation ),
-			...this.spriteSize.scale( Townsend.VCTSH.coefficient ).values
+			...this.spriteSize.values, // unit size
+			viewportOffset,
+			...this.spriteSize.scale( TSINTERFACE.VCTSH.coefficient ).values
 		);
 	}
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/tilesprite.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/tilesprite.js */
 /**
  * Simple tiles
  */
 class TileSprite extends PrerenderableSprite{
-	constructor( tile, tileSpriteSource = Townsend.spritesheet.placeholders, tileSpriteKey = new Vector(0,0) ){
+	constructor( tile, tileSpriteSource = TSINTERFACE.spritesheet.placeholders, tileSpriteKey = new Vector(0,0) ){
 		super();
 		this.tile = tile;
 		this.width = cfg.tile_size;
@@ -390,10 +435,10 @@ class TileSprite extends PrerenderableSprite{
 		this.source = tileSpriteSource;
 		this.sourceKey = tileSpriteKey;
 
-		this.defaultStaticGroundLocation = Townsend.spritesheet.grounds.getTileAt(0,0);
+		this.defaultStaticGroundLocation = TSINTERFACE.spritesheet.grounds.getTileAt(0,0);
 		// Other stuff
 		this.staticSpriteLocation = this.source.getSpriteAt( 1, 0 );
-		this.staticGroundSource = Townsend.spritesheet.grounds;
+		this.staticGroundSource = TSINTERFACE.spritesheet.grounds;
 		this.staticGroundLocation = this.defaultStaticGroundLocation;
 		this.spritePixelOffset = new Vector( 0,2 );	// The offset of a sprite
 		this.spritePixelOverflowOffset = this.calculateOverflowOffset(); // This is what Chunk.canvasOverflow is for
@@ -532,7 +577,7 @@ class TileSprite extends PrerenderableSprite{
 	}
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/nonsolid.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/nonsolid.js */
 class TileSpriteNonSolid extends TileSprite{
 	constructor( ...args ){
 		super(...args);
@@ -554,14 +599,14 @@ class TileSpriteNonSolid extends TileSprite{
 	}
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/bush.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/bush.js */
 class TileSpriteBush extends TileSprite{
     constructor( tile ){
         super( tile );
         this.isSolidSprite = true; // If the sprite occupies all 16x16 pixels
-        this.source = Townsend.spritesheet.plants1;
+        this.source = TSINTERFACE.spritesheet.plants1;
         this.staticSpriteLocation = this.source.getTileAt( 0, 0 );
-        this.staticGroundLocation = Townsend.spritesheet.grounds.getTileAt(0,3);
+        this.staticGroundLocation = TSINTERFACE.spritesheet.grounds.getTileAt(0,3);
         this.spritePixelOffset = new Vector( 0,2 );
         this.spritePixelOverflowOffset = this.calculateOverflowOffset();
 
@@ -585,7 +630,7 @@ class TileSpriteBush extends TileSprite{
     }
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/grass.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/grass.js */
 class TileSpriteGrass extends TileSprite{
 	constructor( tile ){
         super( tile );
@@ -596,8 +641,8 @@ class TileSpriteGrass extends TileSprite{
 
 	t3_draw( chunk, pCoordVect ){
 		// Ground Grass tile
-		if( Math.random() < 0.05){
-			this.staticGroundLocation = this.source.getTileAt(0,1+Math.floor(Math.random()*2));
+		if( Math.random() < 0.1){
+			this.staticGroundLocation = this.source.getTileAt(1,1+Math.floor(Math.random()*2));
 		}else{
 			this.staticGroundLocation = this.defaultStaticGroundLocation;
 		}
@@ -609,14 +654,14 @@ class TileSpriteGrass extends TileSprite{
 		if( false && Math.random() < 0.05){
 			// Big plants
 			randomSprite= Math.floor(Math.random()* 6);
-			this.staticGroundLocation = Townsend.spritesheet.grounds.getTileAt(0,4);
-            randomSpriteLocation = Townsend.spritesheet.plants1.getTileAt( 1, randomSprite );
-			TileSprite.drawLayeredTile( Townsend.spritesheet.plants1, chunk, randomSpriteLocation, this.spritePixelOffset, this.spritePixelOverflowOffset, pCoordVect );
+			this.staticGroundLocation = TSINTERFACE.spritesheet.grounds.getTileAt(0,4);
+            randomSpriteLocation = TSINTERFACE.spritesheet.plants1.getTileAt( 1, randomSprite );
+			TileSprite.drawLayeredTile( TSINTERFACE.spritesheet.plants1, chunk, randomSpriteLocation, this.spritePixelOffset, this.spritePixelOverflowOffset, pCoordVect );
 		}else{
 			// Grass overlays
 			randomSprite= Math.floor(Math.random()* 6);
-			randomSpriteLocation = Townsend.spritesheet.plants1.getTileAt( 4, randomSprite );
-			Townsend.spritesheet.plants1.drawTile(
+			randomSpriteLocation = TSINTERFACE.spritesheet.plants1.getTileAt( 4, randomSprite );
+			TSINTERFACE.spritesheet.plants1.drawTile(
 				chunk.renderer.canvasOverflowCtx,
 				randomSpriteLocation,
 				pCoordVect,
@@ -625,9 +670,9 @@ class TileSpriteGrass extends TileSprite{
 		}
 	}
 }
+//174.115.XXX.XXX
 
-
-/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/neighbourdependent.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/neighbourdependent.js */
 class TileSpriteNeighbourDependent extends TileSprite{
     constructor( tile, source, atlasKey = new Vector(0,0) ){
         super( tile );
@@ -709,7 +754,7 @@ class TileSpriteNeighbourDependent extends TileSprite{
     t3_getSpriteMapKey( globalTileCoordVect ){
         return Tile.neighbours.map( ( offsetVector )=>{
             var neighbour = globalTileCoordVect.add( offsetVector ),
-                neighbourTileObject = Townsend.World.getTile( neighbour.x, neighbour.y );
+                neighbourTileObject = TSINTERFACE.World.getTile( neighbour.x, neighbour.y );
             // Unknown tiles
             if(!neighbourTileObject){return 1;}
             return this.neighbourCondition( neighbourTileObject ) ? 1 : 0;
@@ -717,7 +762,7 @@ class TileSpriteNeighbourDependent extends TileSprite{
     }
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/metaneighdep.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/metaneighdep.js */
 class TileSpriteMetaNeighbourDependent extends TileSpriteNeighbourDependent{
     constructor( tile, source, atlasKey = new Vector(0,0) ){
         super( tile, source, atlasKey );
@@ -726,11 +771,11 @@ class TileSpriteMetaNeighbourDependent extends TileSpriteNeighbourDependent{
     t3_getSpriteMapKey( globalTileCoordVect ){
         return Tile.neighbours.map( ( offsetVector, index )=>{
             var neighbour = globalTileCoordVect.add( offsetVector ),
-                neighbourTileObject = Townsend.World.getTile( neighbour.x, neighbour.y );
+                neighbourTileObject = TSINTERFACE.World.getTile( neighbour.x, neighbour.y );
             if(!neighbourTileObject){return 0;}
-            if( index==2 && neighbourTileObject.meta != this.tile.meta){
-                var thisElevation = Townsend.World.generation.getElevationAt(globalTileCoordVect.x, globalTileCoordVect.y),
-                    belowElevation = Townsend.World.generation.getElevationAt(neighbour.x, neighbour.y);
+            if( neighbourTileObject.meta != this.tile.meta){
+                var thisElevation = TSINTERFACE.World.generation.getElevationAt(globalTileCoordVect.x, globalTileCoordVect.y),
+                    belowElevation = TSINTERFACE.World.generation.getElevationAt(neighbour.x, neighbour.y);
                 if( thisElevation<=belowElevation ){
                     return 1;
                 }
@@ -740,7 +785,7 @@ class TileSpriteMetaNeighbourDependent extends TileSpriteNeighbourDependent{
     }
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/wall.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/wall.js */
 
 
 class TileSpriteWall extends TileSpriteNeighbourDependent{
@@ -748,7 +793,7 @@ class TileSpriteWall extends TileSpriteNeighbourDependent{
         super( tile );
         this.spriteLocation = null;
         this.requestSpriteUpdate = true;
-        this.source = Townsend.spritesheet.walls;
+        this.source = TSINTERFACE.spritesheet.walls;
         this.atlasKey = new Vector(0,0);
     }
 
@@ -793,7 +838,7 @@ class TileSpriteWall extends TileSpriteNeighbourDependent{
 }
 
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/sand.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/sand.js */
 class TileSpriteSand extends TileSpriteNeighbourDependent{
     constructor( tile, source, atlasKey ){
         super( tile, source, atlasKey );
@@ -804,7 +849,7 @@ class TileSpriteSand extends TileSpriteNeighbourDependent{
     }
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/water.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/water.js */
 class TileSpriteWater extends TileSpriteNeighbourDependent{
     constructor( tile, source, atlasKey ){
         super( tile, source, atlasKey );
@@ -812,11 +857,11 @@ class TileSpriteWater extends TileSpriteNeighbourDependent{
     }
 }
 
-/* File source: ../src/Ambitious_Dwarf///src/sprites/tilesprite/stockpile.js */
+/* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/stockpile.js */
 class TileSpriteStockpile extends TileSpriteNeighbourDependent{
     constructor( tile ){
         super( tile );
-        this.source = Townsend.spritesheet.floors;
+        this.source = TSINTERFACE.spritesheet.floors;
         this.sourceKey = this.source.getSpriteAt(2,3);
         this.atlasKey = this.source.getSpriteAt(0,0);
     }

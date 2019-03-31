@@ -244,7 +244,7 @@ function nestedIncriment(initialValues, reachValues, callback) {
 	nest[nest.length - 1]();
 }
 
-function asyncNestedIncriment(initialValues, reachValues, callback){
+function asyncNestedIncriment(initialValues, reachValues, callback, onDone){
 	var values = initialValues.map((x) => { return x; }),
 		nest = [() => { callback(...values); }];
 
@@ -258,10 +258,12 @@ function asyncNestedIncriment(initialValues, reachValues, callback){
 				nest[index]();
 			});
 		});
-	});
 
-	// Burn the nest down
-	nest[nest.length - 1]();
+		if(index>=initialValues.length-1){
+			nest[nest.length - 1]();
+		}
+	});
+	
 }
 
 /**
@@ -548,6 +550,7 @@ class Vector{
 	equals( _Vector ){
 		var self = this,
 			out = ( this == _Vector );
+		if(!_Vector) return false;
 		if( self.uvLength == _Vector.uvLength ){
 			var match = 0;
 			self.values.map( ( x, index )=>{
@@ -626,6 +629,10 @@ class Vector{
 		}
 	}
 
+	map( _Function ){
+		return this.forEach( _Function );
+	}
+
 	// Multi-operations. Use this when performing multiple operations to reduce the amount of objects being created
 	mOpStart(){
 		this.isMutable = true;
@@ -651,7 +658,7 @@ class Vector{
 	}
 
 	toString(){
-		return this.string;
+		return JSON.stringify(this);
 	}
 
 	/**
@@ -807,6 +814,10 @@ class Forterate{
 			}
 		});
 	}// callback ->
+
+	toString(){
+		return JSON.stringify(this);
+	}
 }
 
 /* File source: ../lib/javascript/jsbuilder0.0.1/containers/boplane.js */
@@ -1119,7 +1130,7 @@ class UboPlane{
 		if( this.getNodePointer( x, y ) ){
 			
 			// Replace it instead
-			return replaceObject( x, y, object );
+			return this.replaceObject( x, y, object );
 		}
 		
 		// Otherwise place a newly created node
@@ -1132,7 +1143,7 @@ class UboPlane{
 	*/
 	replaceObject( x, y, object ){
 		// Node which currently occupies spot
-		var node = getNode( x, y );
+		var node = this.getNode( x, y );
 		
 		// Reassign the node's content
 		this.listOfEntities.changeNodeContent( node, object );
@@ -1170,6 +1181,64 @@ class UboPlane{
 	}
 	
 }
+
+/* File source: ../lib/javascript/jsbuilder0.0.1/containers/basicplane.js */
+/**
+ * IPlane{
+ *      void placeObject( int x, int y, any object );
+ *      any getObject( int x, int y );
+ * }
+ */
+
+class BasicPlane{
+    constructor( size, defaultObject={} ){
+        // This was causing the weird glitch issues
+        // It was filling every row with the refrence to the same column array
+        // rather than creating new columns for each row
+        this.map = new Array(size).fill(null).map((x)=>{
+            return new Array(size).fill(null);
+        });
+        this.defaultObject = {payload:defaultObject};
+        this.rows = size;
+        this.cols = size;
+    }
+
+    isInRange( x, y ){
+		return x>=0 && x <=this.cols && y>=0 && y<=this.rows;
+	}
+
+    placeObject( x, y, object ){
+        var obj = {payload:object};
+        if( this.isInRange( x,y) ){
+            this.map[y][x] = obj;
+        }   
+    }
+
+    /**
+     * Returns null if the object is out of range, otherwise it returns the object at x,y or the default object
+     * @param {*} x 
+     * @param {*} y 
+     */
+    getObject( x, y ){
+        var obj = this.map[y][x];
+        if(this.isInRange(x,y)){
+            if(!obj){
+                return this.defaultObject;
+            }
+            return obj;
+        }else{
+            return null;
+        }
+        
+    }
+
+    iterateAllNodes( callback ){
+        return this.map.map( ( yArr )=>{
+            return yArr.map( callback );
+        });
+    }
+}
+// Basicplane and boplane should be used the same way as far as I know
 
 /* File source: ../lib/javascript/jsbuilder0.0.1/containers/propipe.js */
 class PropertyPipeline{
@@ -1426,6 +1495,7 @@ class Color{
 class SimpleEventEmitter{
     constructor( maxEventHistoryLength=0 ){
         this.events = {};
+        this.onceEvents = {};
         this.eventHistory = [];
         this.eventHistoryMaxSize = maxEventHistoryLength;
     }
@@ -1433,6 +1503,7 @@ class SimpleEventEmitter{
     ensureEventIsDefined( eventName ){
         if( !this.events[eventName]){
             this.events[eventName] = [];
+            this.onceEvents[eventName] = [];
         }
     }
     
@@ -1441,11 +1512,20 @@ class SimpleEventEmitter{
         this.events[eventName].push( handler );
     }
 
+    once( eventName, handler ){
+        this.ensureEventIsDefined( eventName );
+        this.onceEvents[eventName].push( handler );
+    }
+
     emit( eventName, thisArg, ...params ){
         this.ensureEventIsDefined( eventName );
         this.events[eventName].map( (handler)=>{
             handler.apply( thisArg, params );
         });
+        while(this.onceEvents[eventName].length > 0){
+            let callback = this.onceEvents[eventName].pop();
+            callback.apply( thisArg, params );
+        }
         if(this.maxEventHistoryLength<=0) return;
         this.eventHistory[this.eventHistory.length%this.eventHistoryMaxSize] = {date:new Date().getTime(), eventName:eventName, params:params}
     }

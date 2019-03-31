@@ -5,7 +5,7 @@ class TileScaffolding extends StorageTile{
      */
     constructor( buildsInto ){
         super();
-        this.sprite = new TileSprite( this, Townsend.spritesheet.objects, Townsend.spritesheet.objects.getSpriteAt(0,3) );
+        this.sprite = new TileSprite( this, TSINTERFACE.spritesheet.objects, TSINTERFACE.spritesheet.objects.getSpriteAt(0,3) );
         this.isSpecial = true;
         this.buildsInto = buildsInto;
     }
@@ -26,6 +26,6 @@ class TileScaffolding extends StorageTile{
     }
 
     on_constructed( x, y ){
-        Townsend.World.placeTile( this.tile , x, y )
+        TSINTERFACE.World.placeTile( this.tile , x, y )
     }
 }

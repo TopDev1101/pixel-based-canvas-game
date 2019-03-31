@@ -10,8 +10,8 @@ class GameLoader{
     constructor( buildPath = "./build", fileFormat = /\d+_\w+.js/){
         this.buildPath = "./build";
 
-        var fs = require("fs");
-        this.loadOrder = fs.readdirSync( buildPath ).filter( (dir)=>{
+        
+        this.loadOrder = CLIENT_getGameFiles( buildPath ).filter( (dir)=>{
             // Pull out the files with the right name format
             var a = fileFormat.test( dir );
             return a;

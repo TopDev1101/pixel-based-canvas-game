@@ -44,6 +44,10 @@ class Tile extends Actor{
 		this.setupEvents();
 	}
 
+	toString(){
+		return this.name;
+	}
+
 	get name(){ return "tile"; }
 
 	////////////
@@ -70,7 +74,7 @@ class Tile extends Actor{
 	 * Get a list of neighbour offsets
 	 */
 	static get neighbours(){
-		return Townsend.neighbourOffsetVectorList;
+		return TSINTERFACE.neighbourOffsetVectorList;
 	}
 
 	/**
@@ -99,7 +103,7 @@ class Tile extends Actor{
 	on_placed( gCoordVect, world ){
 		if(!this.world){this.world = world;}
         var position = gCoordVect;
-        Townsend.neighbourOffsetVectorList.map( ( offsetVector )=>{
+        TSINTERFACE.neighbourOffsetVectorList.map( ( offsetVector )=>{
             var neighbourLocation = position.add(offsetVector);
             if( this.world.tileExists(...neighbourLocation.values)){
 				var extendedTileData = this.world.getTilePlus( ...neighbourLocation.values );
@@ -243,11 +247,11 @@ class Tile extends Actor{
 	}
 
 	// Batch rendering nonsense //
-	get DEPRECIATED_batchContextOverflow(){return Townsend.viewContext.renderingManager.contexts.batchOverflow;}
-	get DEPRECIATED_batchContextLower(){return Townsend.viewContext.renderingManager.contexts.batchLower;}
+	get DEPRECIATED_batchContextOverflow(){return TSINTERFACE.viewContext.renderingManager.contexts.batchOverflow;}
+	get DEPRECIATED_batchContextLower(){return TSINTERFACE.viewContext.renderingManager.contexts.batchLower;}
 	DEPRECIATED_batchInstanceRenderProtocol( to ){
 		to = to.scale( this.tileSize );
-		this.batchInstanceDrawOverflow(to.subtract(Townsend.batch.overflowOffset));
+		this.batchInstanceDrawOverflow(to.subtract(TSINTERFACE.batch.overflowOffset));
 		this.batchInstanceDrawLower(to);
 
 	} ^/
@@ -275,7 +279,7 @@ class Tile extends Actor{
 		a = Math.floor((Math.floor(data.time*cfg.sprite_ground_flowFrameCoefficient)+(data.to.x-Math.sin(data.to.y/cfg.sprite_ground_flowSizeCoefficient))*states+(data.to.y)*states)%states),
 		location = tilesheet.getTileAt( cfg.sprite_ground_y, a );	// Tile Sprite location
 		//Math.round(7+(Math.abs(Math.sin( Math.floor(viewContext.frameCounter/10) + Math.pow((data.to.x+data.to.y),2)/4)))*4) 
-		Townsend.analytics.flow = a;
+		TSINTERFACE.analytics.flow = a;
 	}
 	*/
 }

@@ -1,51 +1,58 @@
 var _TileViewContext, world, heap;
-Townsend.analytics.flow = 0;
+TSINTERFACE.analytics.flow = 0;
 
 function init() {
 
 	//initializeTileDrawRoutine();
 	_TileViewContext = new TileViewContext();
-	Townsend.viewContext = _TileViewContext;
-	Townsend.canvases = Townsend.viewContext.renderingManager.canvases;
-	Townsend.canvasContexts = Townsend.viewContext.renderingManager.contexts;
+	TSINTERFACE.viewContext = _TileViewContext;
+	TSINTERFACE.canvases = TSINTERFACE.viewContext.renderingManager.canvases;
+	TSINTERFACE.canvasContexts = TSINTERFACE.viewContext.renderingManager.contexts;
 
 	// Shorthands
-	Townsend.VC = Townsend.viewContext;
-	Townsend.VCCUR = Townsend.viewContext.cursor;
-	Townsend.GCUR = new CursorInteractionContext( null, document.body );
-	Townsend.VCTSH = Townsend.viewContext.tileScaleHelper;
-	Townsend.CVS = Townsend.canvases;
-	Townsend.CVSCTX = Townsend.canvasContexts;
+	TSINTERFACE.VC = TSINTERFACE.viewContext;
+	TSINTERFACE.VCCUR = TSINTERFACE.viewContext.cursor;
+	TSINTERFACE.GCUR = new CursorInteractionContext( null, document.body );
+	TSINTERFACE.VCTSH = TSINTERFACE.viewContext.tileScaleHelper;
+	TSINTERFACE.CVS = TSINTERFACE.canvases;
+	TSINTERFACE.CVSCTX = TSINTERFACE.canvasContexts;
 
 
 	world = new World();
-	Townsend.World = world;
+	TSINTERFACE.World = world;
+	world.createNewMap( onWorldChunksDoneLoading);
 	
 	
-	// Townsend.locked.doBatching
-	
+	// TSINTERFACE.locked.doBatching
+}
 
-	_TileViewContext.initDrawRoutines();
-	_TileViewContext.draw();
-	_TileViewContext.tileScaleHelper.scale = 0.25;
+function onWorldChunksDoneLoading(){
+	TSINTERFACE.progressBarUpdaters.chunkRender = Townsend.loadingScreen.createProgressBar( "chunk-render", "Rendering chunks" );
+	TSINTERFACE.viewContext.initDrawRoutines();
+	TSINTERFACE.viewContext.draw();
+	TSINTERFACE.viewContext.tileScaleHelper.scale = 0.25;
 	// Well, it renders. The cursor context needs work though
 	
 	createDebugWindow();
 
-	Townsend.World.updateloop();
+	TSINTERFACE.World.updateloop();
 
 	
 	for( var i = 0; i < cfg.testing_entity_amount; i++ ){
-		Townsend.World.entities.push( new EntityPerson() );
+		TSINTERFACE.World.entities.push( new EntityPerson() );
 	}
 
-	setupMouseHandlers( Townsend.GCUR, Townsend.VCCUR );
+	setupMouseHandlers( TSINTERFACE.GCUR, TSINTERFACE.VCCUR );
+}
+
+function onWorldChunksDoneRendering(){
+
 }
 
 function setupMouseHandlers( globalCursorEnv, cursorEnv ){
 	cursorEnv.addHandler("onmousemove", handle_elementHover);
 	globalCursorEnv.addHandler("onmousemove", handle_globalHover);
-	cursorEnv.addHandler("onmousemove", handle_placeBlock);
+	cursorEnv.addHandler("onmousemove", handle_mouseDrag);
 	cursorEnv.addHandler("onmousemove", handle_moveMap);
 	cursorEnv.addHandler("onmousedown", handle_elementMousedown);
 	cursorEnv.addHandler("onmouseup", handle_elementMouseup);
@@ -58,10 +65,10 @@ function createDebugWindow(){
 	dbgWindow = new DebugWindow( cfg.debug_window_Width );
 	dbgWindow.addWatcher( _TileViewContext, "fps", (a)=>{return a.fps;} );
 	dbgWindow.addWatcher( _TileViewContext.cursor.position.values, "mp" );
-	dbgWindow.addWatcher( null, "heapUsed", (n)=>{ var a = Townsend.safety.heapWatch(); return Math.floor(a/1024/1024)+"/"+cfg.memory_max+" Mb";} );
-	dbgWindow.addWatcher( null, "analytics_flow", ()=>{ return Townsend.analytics.flow; } );
+	dbgWindow.addWatcher( null, "heapUsed", (n)=>{ var a = TSINTERFACE.safety.heapWatch(); return Math.floor(a/1024/1024)+"/"+cfg.memory_max+" Mb";} );
+	dbgWindow.addWatcher( null, "analytics_flow", ()=>{ return TSINTERFACE.analytics.flow; } );
 	dbgWindow.addWatcher( _TileViewContext.pixelOffset, "pixeloffset" );
-	dbgWindow.addWatcher( Townsend.analytics, "general_analytics");
+	dbgWindow.addWatcher( TSINTERFACE.analytics, "general_analytics");
 }
 
 init();
