@@ -1,12 +1,22 @@
 /* File source: ../src/Ambitious_Dwarf///src/game/map/tilemap.js */
 // Saves memory by storing redundant data in the same index
-class TileMap extends BoPlane{
-	constructor( rows, cols, defaultTile ){
-		super( rows, cols, "payload" );
+class TileMapBasic extends BasicPlane{
+	constructor( size, defaultTile ){
+		super( size, defaultTile );
+		
+		//this.forterator.default = this.createNode( 0, 0, defaultTile );
+	}
+}
+// Saves memory by storing redundant data in the same index
+class TileMapBop extends BoPlane{
+	constructor( size, defaultTile ){
+		super( size, size, "payload" );
 		
 		this.forterator.default = this.createNode( 0, 0, defaultTile );
 	}
 }
+
+const TileMap = TileMapBasic;
 
 /* File source: ../src/Ambitious_Dwarf///src/game/map/worldgen.js */
 const SIMPLEX_NOISE = require("simplex-noise");
@@ -237,7 +247,7 @@ class World{
 		// Find out which chunk
 		var chunk = this.getChunkFromTile( globalX, globalY );
 		if( chunk ){
-			return chunk.getObject(
+			return chunk.tileMap.getObject(
 				Math.mod( globalX, this.chunkSize ),
 				Math.mod( globalY, this.chunkSize )).payload.tile;
 		}
@@ -254,7 +264,7 @@ class World{
 		// Find out which chunk
 		var chunk = this.getChunkFromTile( globalX, globalY );
 		if( chunk ){
-			return chunk.getObject(
+			return chunk.tileMap.getObject(
 				Math.mod( globalX, this.chunkSize ),
 				Math.mod( globalY, this.chunkSize )).payload.tile;
 		}else if(this.tileExists( globalX, globalY )){
@@ -297,7 +307,7 @@ class World{
 	placeObject( object, globalX, globalY ){
 		var chunk = this.getChunkFromTile( globalX, globalY );
 		if( chunk ){
-			return chunk.t3_placeTile(object,
+			return chunk.placeTile(object,
 				Math.mod( globalX, this.chunkSize ),
 				Math.mod( globalY, this.chunkSize ));
 		}
@@ -383,19 +393,19 @@ class World{
 		if( elevation >= cfg.generation_stone_threshold){
 			var n = Math.floor(elevation*cfg.generation_steepness_factor);
 			if( n % 2 == 0 ){
-				chunk.t3_placeTile(TSINTERFACE.tiles.stone, tileX,tileY);
+				chunk.placeTile(TSINTERFACE.tiles.stone, tileX,tileY);
 			}else{
-				chunk.t3_placeTile(TSINTERFACE.tiles.stoneMeta1, tileX,tileY);
+				chunk.placeTile(TSINTERFACE.tiles.stoneMeta1, tileX,tileY);
 			}
 		}else if( elevation <= -cfg.generation_stone_threshold){
 			if(elevation <= -cfg.generation_stone_threshold-0.05){
-				chunk.t3_placeTile(TSINTERFACE.tiles.water, tileX,tileY);
+				chunk.placeTile(TSINTERFACE.tiles.water, tileX,tileY);
 				return;
 			}
-			chunk.t3_placeTile(TSINTERFACE.tiles.sand, tileX,tileY);
+			chunk.placeTile(TSINTERFACE.tiles.sand, tileX,tileY);
 			return;
 			if (Math.random() <= cfg.world_treePlacementModifier) {
-				chunk.t3_placeTile(TSINTERFACE.tiles.berryBush, tileX,tileY);
+				chunk.placeTile(TSINTERFACE.tiles.berryBush, tileX,tileY);
 			}
 		}
 	}
@@ -530,9 +540,9 @@ class ChunkActor extends Actor{
     }
 }
 
-class Chunk extends TileMap{
+class Chunk{
     constructor( world, size, positionVector ){
-        super( size, size, {tile:TSINTERFACE.tiles.default, metadata:{}} );
+        this.tileMap = new TileMap( size, {tile:TSINTERFACE.tiles.grass, metadata:{}} );
         this.position = positionVector;
         this.size = size;
         this.world = world;
@@ -573,22 +583,33 @@ class Chunk extends TileMap{
         return {tile:tile, metadata:metadata}
     }
 
-    t3_placeTile( tile, x, y ){
+    placeTile( tile, x, y ){
         var location = new Vector(x, y);
 
-        var occupiedNode = this.getObject( x, y );
+        var occupiedNode = this.tileMap.getObject( x, y );
         if( occupiedNode ){
             occupiedNode.payload.tile.sprite.t3_clearRenderingSpace( this, location );
         }
 
-        this.placeObject( x, y, this.createPayload( tile, tile.defaultMetadata ) ); /// Haha what
+        this.tileMap.placeObject( x, y, this.createPayload( tile, tile.defaultMetadata ) ); /// Haha what
         this.assignToLabels( tile, location );
 
         this.markTileForRendering( tile, location );
         
-        this.updateKeys()
+        this.updateKeys();
 
         tile.eventEmitter.emit( "placed", tile, this.chunkRelCoordsToGlobalRelCoords( location ), this.world );
+    }
+
+    /**
+     * UNSAFE, gets a tile, assumes the tile exists.
+     * Do not use if you are unsure about the existence of a tile,
+     * or without implementing proper measures to handle a non-existent tile
+     * @param {*} x 
+     * @param {*} y 
+     */
+    getTile( x, y ){
+        return ( this.tileMap.getObject( x, y ).payload || {} ).tile;
     }
 
     markTileForRendering( tile, location ){
@@ -608,12 +629,12 @@ class Chunk extends TileMap{
             if(tile[goodName.prop]){
                 this[goodName.ref][location.string] = Chunk.createTileNode( tile, location );
             }
-        },this )
+        },this );
     }
 
     // TODO finish
-    t3_removeObject( x, y ){
-        this.removeObject( x, y );
+    removeObject( x, y ){
+        this.tileMap.removeObject( x, y );
     }
 
 
@@ -984,7 +1005,9 @@ function handle_elementHover(self, event) {
             TSINTERFACE.tooltip.hide();
         }
     }
-    document.title = JSON.stringify(self.tile);
+    let temp_obj = TSINTERFACE.World.getObjectsAt( self.tile.x, self.tile.y ).tiles;
+    let temp_end = ", " +  ( (temp_obj || {}).identityString || "No Tile");
+    document.title = JSON.stringify(self.tile) + temp_end;
 }
 
 /**
@@ -2358,8 +2381,8 @@ class TileStone extends Tile{
         // Todo fix sprites for meta
         this.meta = meta;
         this.sprite = new TileSpriteMetaNeighbourDependent( this,
-            TSINTERFACE.spritesheet.walls, TSINTERFACE.spritesheet.walls.getSpriteAt(3,0) );
-        this.sprite.staticGroundLocation = this.sprite.staticGroundSource.getSpriteAt(0,5);
+            TSINTERFACE.spritesheet.walls, TSINTERFACE.spritesheet.walls.getSpriteAt(6,0) );
+        this.sprite.staticGroundLocation = this.sprite.staticGroundSource.getSpriteAt(0,0); // 0,5 for stone floor
         this.isObstacle = true;
         this.addIdentity("stone");
         this.addIdentity(`meta${meta}`)

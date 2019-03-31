@@ -271,7 +271,7 @@ class World{
 	placeObject( object, globalX, globalY ){
 		var chunk = this.getChunkFromTile( globalX, globalY );
 		if( chunk ){
-			return chunk.t3_placeTile(object,
+			return chunk.placeTile(object,
 				Math.mod( globalX, this.chunkSize ),
 				Math.mod( globalY, this.chunkSize ));
 		}
@@ -356,19 +356,19 @@ class World{
 		if( elevation >= cfg.generation_stone_threshold){
 			var n = Math.floor(elevation*10);
 			if( n % 2 == 0 ){
-				chunk.t3_placeTile(TSINTERFACE.tiles.stone, tileX,tileY);
+				chunk.placeTile(TSINTERFACE.tiles.stone, tileX,tileY);
 			}else{
-				chunk.t3_placeTile(TSINTERFACE.tiles.stoneMeta1, tileX,tileY);
+				chunk.placeTile(TSINTERFACE.tiles.stoneMeta1, tileX,tileY);
 			}
 		}else if( elevation <= -cfg.generation_stone_threshold){
 			if(elevation <= -cfg.generation_stone_threshold-0.05){
-				chunk.t3_placeTile(TSINTERFACE.tiles.water, tileX,tileY);
+				chunk.placeTile(TSINTERFACE.tiles.water, tileX,tileY);
 				return;
 			}
-			chunk.t3_placeTile(TSINTERFACE.tiles.sand, tileX,tileY);
+			chunk.placeTile(TSINTERFACE.tiles.sand, tileX,tileY);
 			return;
 			if (Math.random() <= cfg.world_treePlacementModifier) {
-				chunk.t3_placeTile(TSINTERFACE.tiles.berryBush, tileX,tileY);
+				chunk.placeTile(TSINTERFACE.tiles.berryBush, tileX,tileY);
 			}
 		}
 	}

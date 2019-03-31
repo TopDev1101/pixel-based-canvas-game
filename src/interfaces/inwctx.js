@@ -16,3 +16,7 @@ function CLIENT_parseCensusFile( filePath ){
 function CLIENT_NewSimplexNoise( seed ){
     return new SIMPLEX_NOISE( seed );
 }
+
+window.addEventListener("error", ()=>{
+    CLIENT_openDebugMenu();
+})

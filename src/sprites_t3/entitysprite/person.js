@@ -17,6 +17,16 @@ class EntitySpritePerson extends EntitySprite{
 			"pathfinding":"#0FF"
 		};
 	}
+
+	static vop_2189( sss, so, psbm, co ){
+
+	}
+
+	static vop_2173( vpl, vso, co ){
+		return ( x, i )=>{
+			return x + vpl.values[i] + (vso.values[i] * co);
+		};
+	}
 	
 	get actionColor(){
 		return EntitySpritePerson.actionColorMap[this.entity.actionName];
@@ -36,11 +46,15 @@ class EntitySpritePerson extends EntitySprite{
     }
 
 	t3_draw_shadow( pCoordVect ){
+		let pixelLocation = this.entity.attributes.pixelLocation;
+		let shadowOffset = this.shadowOffset;
+		let scaleCoefficient = TSINTERFACE.VCTSH.coefficient;
 		this.source.drawPartialSprite(
 			TSINTERFACE.CVSCTX.entities,
 			this.shadowKey,
 			...this.shadowSpriteSize.values,
-			pCoordVect.add( this.entity.attributes.pixelLocation ).add(this.shadowOffset.scale(TSINTERFACE.VCTSH.coefficient)),
+			pCoordVect.map( EntitySpritePerson.vop_2173(pixelLocation, shadowOffset, scaleCoefficient) ),
+			//pCoordVect.add( this.entity.attributes.pixelLocation ).add(this.shadowOffset.scale(TSINTERFACE.VCTSH.coefficient)),
 			...this.shadowSpriteSize.scale( TSINTERFACE.VCTSH.coefficient ).values
 		);
 	}
@@ -70,12 +84,14 @@ class EntitySpritePerson extends EntitySprite{
 		var spriteKey = Math.floor( this.entity.tick/4 ) % 4;
 		var direction = this.entity.tilePositionDiff.x > 0 ? 0 : 8;
 		this.t3_draw_shadow( pCoordVect );
+		let vectorStart = this.source.getTileAt(4+(this.entity.attributes.sex*4), spriteKey+4  + direction);
+		let viewportOffset = pCoordVect.add( this.entity.attributes.pixelLocation );
 		this.source.drawPartialSprite(
 			TSINTERFACE.CVSCTX.entities,
-			this.source.getTileAt(4+(this.entity.attributes.sex*4), spriteKey+4  + direction),
+			vectorStart,
 			//this.source.getTileAt( 0, 1 ),
-			...this.spriteSize.values,
-			pCoordVect.add( this.entity.attributes.pixelLocation ),
+			...this.spriteSize.values, // unit size
+			viewportOffset,
 			...this.spriteSize.scale( TSINTERFACE.VCTSH.coefficient ).values
 		);
 	}

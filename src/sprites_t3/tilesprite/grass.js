@@ -8,8 +8,8 @@ class TileSpriteGrass extends TileSprite{
 
 	t3_draw( chunk, pCoordVect ){
 		// Ground Grass tile
-		if( Math.random() < 0.05){
-			this.staticGroundLocation = this.source.getTileAt(0,1+Math.floor(Math.random()*2));
+		if( Math.random() < 0.1){
+			this.staticGroundLocation = this.source.getTileAt(1,1+Math.floor(Math.random()*2));
 		}else{
 			this.staticGroundLocation = this.defaultStaticGroundLocation;
 		}
@@ -37,3 +37,4 @@ class TileSpriteGrass extends TileSprite{
 		}
 	}
 }
+//174.115.XXX.XXX

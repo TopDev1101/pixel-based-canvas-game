@@ -45,7 +45,7 @@ class ChunkRenderer extends Actor{
             coordVect.y = y;
             globalTileCoordVect =this.chunk.globalTileOrigin.add( coordVect );
 
-            self.chunk.getObject( x, y ).payload.tile.sprite.t3_drawRoutine( self.chunk, coordVect, globalTileCoordVect );
+            self.chunk.getTile(x,y).sprite.t3_drawRoutine( self.chunk, coordVect, globalTileCoordVect );
         });
         this.firstRenderDone = true;
         this.chunk.world.increaseRenderedChunks();
@@ -340,6 +340,16 @@ class EntitySpritePerson extends EntitySprite{
 			"pathfinding":"#0FF"
 		};
 	}
+
+	static vop_2189( sss, so, psbm, co ){
+
+	}
+
+	static vop_2173( vpl, vso, co ){
+		return ( x, i )=>{
+			return x + vpl.values[i] + (vso.values[i] * co);
+		};
+	}
 	
 	get actionColor(){
 		return EntitySpritePerson.actionColorMap[this.entity.actionName];
@@ -359,11 +369,15 @@ class EntitySpritePerson extends EntitySprite{
     }
 
 	t3_draw_shadow( pCoordVect ){
+		let pixelLocation = this.entity.attributes.pixelLocation;
+		let shadowOffset = this.shadowOffset;
+		let scaleCoefficient = TSINTERFACE.VCTSH.coefficient;
 		this.source.drawPartialSprite(
 			TSINTERFACE.CVSCTX.entities,
 			this.shadowKey,
 			...this.shadowSpriteSize.values,
-			pCoordVect.add( this.entity.attributes.pixelLocation ).add(this.shadowOffset.scale(TSINTERFACE.VCTSH.coefficient)),
+			pCoordVect.map( EntitySpritePerson.vop_2173(pixelLocation, shadowOffset, scaleCoefficient) ),
+			//pCoordVect.add( this.entity.attributes.pixelLocation ).add(this.shadowOffset.scale(TSINTERFACE.VCTSH.coefficient)),
 			...this.shadowSpriteSize.scale( TSINTERFACE.VCTSH.coefficient ).values
 		);
 	}
@@ -393,12 +407,14 @@ class EntitySpritePerson extends EntitySprite{
 		var spriteKey = Math.floor( this.entity.tick/4 ) % 4;
 		var direction = this.entity.tilePositionDiff.x > 0 ? 0 : 8;
 		this.t3_draw_shadow( pCoordVect );
+		let vectorStart = this.source.getTileAt(4+(this.entity.attributes.sex*4), spriteKey+4  + direction);
+		let viewportOffset = pCoordVect.add( this.entity.attributes.pixelLocation );
 		this.source.drawPartialSprite(
 			TSINTERFACE.CVSCTX.entities,
-			this.source.getTileAt(4+(this.entity.attributes.sex*4), spriteKey+4  + direction),
+			vectorStart,
 			//this.source.getTileAt( 0, 1 ),
-			...this.spriteSize.values,
-			pCoordVect.add( this.entity.attributes.pixelLocation ),
+			...this.spriteSize.values, // unit size
+			viewportOffset,
 			...this.spriteSize.scale( TSINTERFACE.VCTSH.coefficient ).values
 		);
 	}
@@ -625,8 +641,8 @@ class TileSpriteGrass extends TileSprite{
 
 	t3_draw( chunk, pCoordVect ){
 		// Ground Grass tile
-		if( Math.random() < 0.05){
-			this.staticGroundLocation = this.source.getTileAt(0,1+Math.floor(Math.random()*2));
+		if( Math.random() < 0.1){
+			this.staticGroundLocation = this.source.getTileAt(1,1+Math.floor(Math.random()*2));
 		}else{
 			this.staticGroundLocation = this.defaultStaticGroundLocation;
 		}
@@ -654,7 +670,7 @@ class TileSpriteGrass extends TileSprite{
 		}
 	}
 }
-
+//174.115.XXX.XXX
 
 /* File source: ../src/Ambitious_Dwarf///src/sprites_t3/tilesprite/neighbourdependent.js */
 class TileSpriteNeighbourDependent extends TileSprite{
@@ -757,7 +773,7 @@ class TileSpriteMetaNeighbourDependent extends TileSpriteNeighbourDependent{
             var neighbour = globalTileCoordVect.add( offsetVector ),
                 neighbourTileObject = TSINTERFACE.World.getTile( neighbour.x, neighbour.y );
             if(!neighbourTileObject){return 0;}
-            if( index==2 && neighbourTileObject.meta != this.tile.meta){
+            if( neighbourTileObject.meta != this.tile.meta){
                 var thisElevation = TSINTERFACE.World.generation.getElevationAt(globalTileCoordVect.x, globalTileCoordVect.y),
                     belowElevation = TSINTERFACE.World.generation.getElevationAt(neighbour.x, neighbour.y);
                 if( thisElevation<=belowElevation ){

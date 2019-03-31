@@ -629,6 +629,10 @@ class Vector{
 		}
 	}
 
+	map( _Function ){
+		return this.forEach( _Function );
+	}
+
 	// Multi-operations. Use this when performing multiple operations to reduce the amount of objects being created
 	mOpStart(){
 		this.isMutable = true;
@@ -1177,6 +1181,64 @@ class UboPlane{
 	}
 	
 }
+
+/* File source: ../lib/javascript/jsbuilder0.0.1/containers/basicplane.js */
+/**
+ * IPlane{
+ *      void placeObject( int x, int y, any object );
+ *      any getObject( int x, int y );
+ * }
+ */
+
+class BasicPlane{
+    constructor( size, defaultObject={} ){
+        // This was causing the weird glitch issues
+        // It was filling every row with the refrence to the same column array
+        // rather than creating new columns for each row
+        this.map = new Array(size).fill(null).map((x)=>{
+            return new Array(size).fill(null);
+        });
+        this.defaultObject = {payload:defaultObject};
+        this.rows = size;
+        this.cols = size;
+    }
+
+    isInRange( x, y ){
+		return x>=0 && x <=this.cols && y>=0 && y<=this.rows;
+	}
+
+    placeObject( x, y, object ){
+        var obj = {payload:object};
+        if( this.isInRange( x,y) ){
+            this.map[y][x] = obj;
+        }   
+    }
+
+    /**
+     * Returns null if the object is out of range, otherwise it returns the object at x,y or the default object
+     * @param {*} x 
+     * @param {*} y 
+     */
+    getObject( x, y ){
+        var obj = this.map[y][x];
+        if(this.isInRange(x,y)){
+            if(!obj){
+                return this.defaultObject;
+            }
+            return obj;
+        }else{
+            return null;
+        }
+        
+    }
+
+    iterateAllNodes( callback ){
+        return this.map.map( ( yArr )=>{
+            return yArr.map( callback );
+        });
+    }
+}
+// Basicplane and boplane should be used the same way as far as I know
 
 /* File source: ../lib/javascript/jsbuilder0.0.1/containers/propipe.js */
 class PropertyPipeline{

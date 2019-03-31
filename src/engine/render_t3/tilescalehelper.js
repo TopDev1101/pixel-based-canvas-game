@@ -45,13 +45,17 @@ class TileScaleHelper {
 		this.adjustPixelOffset();
 	}
 
+	/**
+	 * Adjusts pixelOffset to center the viewport every time a scale operation happens
+	 */
 	adjustPixelOffset(){
-		TSINTERFACE.viewContext.pixelOffset.x-=window.innerWidth/2;
-		TSINTERFACE.viewContext.pixelOffset.y-=window.innerHeight/2;
-		TSINTERFACE.viewContext.pixelOffset.x*=this.tileSize/this.lastTileSize;
-		TSINTERFACE.viewContext.pixelOffset.y*=this.tileSize/this.lastTileSize;
-		TSINTERFACE.viewContext.pixelOffset.x+=window.innerWidth/2;
-		TSINTERFACE.viewContext.pixelOffset.y+=window.innerHeight/2;
+		let oPx = TSINTERFACE.viewContext.pixelOffset;
+		oPx.x-=window.innerWidth/2;
+		oPx.y-=window.innerHeight/2;
+		oPx.x*=this.tileSize/this.lastTileSize;
+		oPx.y*=this.tileSize/this.lastTileSize;
+		oPx.x+=window.innerWidth/2;
+		oPx.y+=window.innerHeight/2;
 	}
 
 	get scale(){

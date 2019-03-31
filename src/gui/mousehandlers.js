@@ -88,7 +88,9 @@ function handle_elementHover(self, event) {
             TSINTERFACE.tooltip.hide();
         }
     }
-    document.title = JSON.stringify(self.tile);
+    let temp_obj = TSINTERFACE.World.getObjectsAt( self.tile.x, self.tile.y ).tiles;
+    let temp_end = ", " +  ( (temp_obj || {}).identityString || "No Tile");
+    document.title = JSON.stringify(self.tile) + temp_end;
 }
 
 /**

@@ -8,7 +8,7 @@ class TileSpriteMetaNeighbourDependent extends TileSpriteNeighbourDependent{
             var neighbour = globalTileCoordVect.add( offsetVector ),
                 neighbourTileObject = TSINTERFACE.World.getTile( neighbour.x, neighbour.y );
             if(!neighbourTileObject){return 0;}
-            if( index==2 && neighbourTileObject.meta != this.tile.meta){
+            if( neighbourTileObject.meta != this.tile.meta){
                 var thisElevation = TSINTERFACE.World.generation.getElevationAt(globalTileCoordVect.x, globalTileCoordVect.y),
                     belowElevation = TSINTERFACE.World.generation.getElevationAt(neighbour.x, neighbour.y);
                 if( thisElevation<=belowElevation ){

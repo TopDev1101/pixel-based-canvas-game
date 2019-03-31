@@ -8,9 +8,9 @@ class ChunkActor extends Actor{
     }
 }
 
-class Chunk extends TileMap{
+class Chunk{
     constructor( world, size, positionVector ){
-        super( size, size, {tile:TSINTERFACE.tiles.default, metadata:{}} );
+        this.tileMap = new TileMap( size, {tile:TSINTERFACE.tiles.grass, metadata:{}} );
         this.position = positionVector;
         this.size = size;
         this.world = world;
@@ -51,22 +51,33 @@ class Chunk extends TileMap{
         return {tile:tile, metadata:metadata}
     }
 
-    t3_placeTile( tile, x, y ){
+    placeTile( tile, x, y ){
         var location = new Vector(x, y);
 
-        var occupiedNode = this.getObject( x, y );
+        var occupiedNode = this.tileMap.getObject( x, y );
         if( occupiedNode ){
             occupiedNode.payload.tile.sprite.t3_clearRenderingSpace( this, location );
         }
 
-        this.placeObject( x, y, this.createPayload( tile, tile.defaultMetadata ) ); /// Haha what
+        this.tileMap.placeObject( x, y, this.createPayload( tile, tile.defaultMetadata ) ); /// Haha what
         this.assignToLabels( tile, location );
 
         this.markTileForRendering( tile, location );
         
-        this.updateKeys()
+        this.updateKeys();
 
         tile.eventEmitter.emit( "placed", tile, this.chunkRelCoordsToGlobalRelCoords( location ), this.world );
+    }
+
+    /**
+     * UNSAFE, gets a tile, assumes the tile exists.
+     * Do not use if you are unsure about the existence of a tile,
+     * or without implementing proper measures to handle a non-existent tile
+     * @param {*} x 
+     * @param {*} y 
+     */
+    getTile( x, y ){
+        return ( this.tileMap.getObject( x, y ).payload || {} ).tile;
     }
 
     markTileForRendering( tile, location ){
@@ -86,12 +97,12 @@ class Chunk extends TileMap{
             if(tile[goodName.prop]){
                 this[goodName.ref][location.string] = Chunk.createTileNode( tile, location );
             }
-        },this )
+        },this );
     }
 
     // TODO finish
-    t3_removeObject( x, y ){
-        this.removeObject( x, y );
+    removeObject( x, y ){
+        this.tileMap.removeObject( x, y );
     }
 
 

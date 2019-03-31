@@ -44,7 +44,7 @@ class ChunkRenderer extends Actor{
             coordVect.y = y;
             globalTileCoordVect =this.chunk.globalTileOrigin.add( coordVect );
 
-            self.chunk.getObject( x, y ).payload.tile.sprite.t3_drawRoutine( self.chunk, coordVect, globalTileCoordVect );
+            self.chunk.getTile(x,y).sprite.t3_drawRoutine( self.chunk, coordVect, globalTileCoordVect );
         });
         this.firstRenderDone = true;
         this.chunk.world.increaseRenderedChunks();
