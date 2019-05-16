@@ -7,7 +7,7 @@
 ## Controls
 - Right mouse `Place down tiles`
 - Mouse wheel `Zoom`
-- Middle mouse `Drag to move the world`
+- WASD `Move the map`
 
 # TODO Technical details
 
