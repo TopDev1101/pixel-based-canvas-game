@@ -1,4 +1,4 @@
-# Townsend, a game framework (With integration) for 2D sandbox games.
+# Townsend, a game framework POC for 2D sandbox games using HTML Canvas.
 ![Screenshot](https://i.imgur.com/pIPFUwy.png)
 ### This was made as a proof of concept.
 
